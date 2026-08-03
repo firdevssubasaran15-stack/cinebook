@@ -21,3 +21,18 @@ veda
 .expo-shared/
 .temp/
 uploads/
+
+# User and Credential Files
+.npmrc
+.yarnrc
+credentials.json
+client_secret.json
+*.pem
+*.cert
+*.crt
+# macOS
+.AppleDouble
+.LSOverride
+
+# Keep local configs out
+localconfig.json
