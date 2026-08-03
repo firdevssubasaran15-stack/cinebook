@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "CineBook",
+    "slug": "cinebook",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F0F1A"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cinebook.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0F0F1A"
+      },
+      "package": "com.cinebook.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Kapak resmi seçmek için galeri erişimi gerekli."
+        }
+      ],
+      "expo-font"
+    ],
+    "scheme": "cinebook",
+    "extra": {
+      "eas": {
+        "projectId": "cinebook-project"
+      }
+    }
+  }
+}
