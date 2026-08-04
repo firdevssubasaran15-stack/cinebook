@@ -3,6 +3,9 @@ const router = express.Router();
 const libraryController = require('@/features/library/library.controller');
 const { authenticateToken } = require('@/shared/middleware/auth.middleware');
 
+// Belirli bir içeriğin kütüphane istatistiklerini (count) al
+router.get('/counts/:contentId', (req, res) => libraryController.getCounts(req, res));
+
 router.use(authenticateToken); // Bütün library uç noktaları için giriş zorunlu
 
 // Kütüphane listesini al

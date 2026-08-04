@@ -37,6 +37,15 @@ class LibraryService {
     return { status };
   }
 
+  getCounts(contentId) {
+    const counts = dbQuery('SELECT status, COUNT(*) as count FROM library WHERE content_id = ? GROUP BY status', [contentId]);
+    const result = {};
+    counts.forEach(row => {
+      result[row.status] = row.count;
+    });
+    return result;
+  }
+
   remove(userId, contentId) {
     dbRun('DELETE FROM library WHERE user_id = ? AND content_id = ?', [userId, contentId]);
     return true;

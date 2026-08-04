@@ -6,12 +6,18 @@ import Icon from '@/features/icon/components/Icon';
 export default function EmotionTag({ tag, isSelected, onToggle }) {
   const { colors: COLORS } = useTheme();
   
-  const tagColor = COLORS[tag.id] || COLORS.textPrimary;
+  // Etiketin kendine ait rengi varsa kullan, yoksa fallback
+  const tagColor = tag.color || COLORS[tag.id] || COLORS.textPrimary;
 
   return (
     <TouchableOpacity
-      className={`flex-row items-center py-1.5 px-3 rounded-full border ${isSelected ? '' : 'bg-light-surfaceElevated dark:bg-dark-surfaceElevated border-light-border/50 dark:border-dark-border/50'}`}
-      style={isSelected ? { backgroundColor: `${tagColor}25`, borderColor: tagColor } : undefined}
+      className={`flex-row items-center py-1.5 px-3 rounded-full border ${
+        isSelected ? '' : 'bg-light-surfaceElevated dark:bg-dark-surfaceElevated'
+      }`}
+      style={{
+        backgroundColor: isSelected ? `${tagColor}25` : undefined,
+        borderColor: isSelected ? tagColor : `${tagColor}60`
+      }}
       onPress={() => onToggle(tag.id)}
       activeOpacity={0.7}
     >
@@ -19,14 +25,14 @@ export default function EmotionTag({ tag, isSelected, onToggle }) {
         <Icon 
           name={tag.iconName} 
           size={16} 
-          color={isSelected ? tagColor : COLORS.textSecondary} 
+          color={tagColor} 
           weight={isSelected ? 'fill' : 'regular'} 
         />
       </View>
       
       <Text 
-        className={`text-[13px] ${isSelected ? 'font-bold' : 'font-medium text-text-lightPrimary dark:text-text-darkPrimary'}`} 
-        style={isSelected ? { color: tagColor } : undefined}
+        className={`text-[13px] ${isSelected ? 'font-bold' : 'font-semibold'}`} 
+        style={{ color: tagColor }}
       >
         {tag.label}
       </Text>

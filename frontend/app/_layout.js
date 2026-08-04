@@ -45,6 +45,9 @@ function RootStack() {
   );
 }
 
+import Toast from 'react-native-toast-message';
+import { toastConfig } from '@/config/toastConfig';
+
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -53,6 +56,7 @@ export default function RootLayout() {
           <RootStack />
         </ThemeProvider>
       </AuthProvider>
+      <Toast config={toastConfig} />
     </GestureHandlerRootView>
   );
 }

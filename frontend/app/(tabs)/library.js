@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, TextInput, Alert, Pressable } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, TextInput, Alert } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -87,17 +87,31 @@ export default function LibraryScreen() {
           {LIBRARY_TABS.map(tab => {
             const isActive = activeTab === tab.id;
             return (
-              <Pressable
+              <TouchableOpacity
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                className={`flex-row items-center gap-1.5 px-3.5 py-2 rounded-full border ${isActive ? 'bg-brand-primary border-brand-primary shadow-sm' : 'bg-light-surfaceElevated border-light-border dark:bg-dark-surfaceElevated dark:border-dark-border'}`}
-                style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
+                activeOpacity={0.8}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 6,
+                  paddingHorizontal: 14,
+                  paddingVertical: 8,
+                  borderRadius: 9999,
+                  borderWidth: 1,
+                  backgroundColor: isActive ? COLORS.primary : (isDark ? COLORS.surfaceElevated : COLORS.surfaceElevated),
+                  borderColor: isActive ? COLORS.primary : (isDark ? COLORS.border : COLORS.border),
+                }}
               >
                 <Icon name={tab.icon} size={16} color={isActive ? '#fff' : COLORS.textPrimary} weight={isActive ? "fill" : "regular"} />
-                <Text className={`text-[13px] font-semibold ${isActive ? 'text-white' : 'text-text-lightPrimary dark:text-text-darkPrimary'}`}>
+                <Text style={{
+                  fontSize: 13,
+                  fontWeight: '600',
+                  color: isActive ? '#fff' : COLORS.textPrimary,
+                }}>
                   {tab.label}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             )
           })}
         </ScrollView>

@@ -244,34 +244,29 @@ export default function UserProfileScreen() {
 
   const renderHeader = () => (
     <View>
-      <LinearGradient colors={isDark ? GRADIENTS.hero : [COLORS.surfaceElevated, COLORS.background]} className="pt-15 pb-10 px-5 items-center rounded-b-[30px] shadow-sm">
-        <TouchableOpacity className="absolute top-[50px] left-5 p-2.5 z-10" onPress={() => router.back()}>
+      <LinearGradient colors={isDark ? GRADIENTS.hero : [COLORS.surfaceElevated, COLORS.background]} style={{ paddingTop: 60, paddingBottom: 40, paddingHorizontal: 20, alignItems: 'center', borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+        <TouchableOpacity style={{ position: 'absolute', top: 50, left: 20, padding: 10, zIndex: 10 }} onPress={() => router.back()}>
           <Icon name="ArrowLeft" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
 
-        {isMe && (
-          <TouchableOpacity className="absolute top-[50px] right-20 p-2.5 z-10" onPress={() => router.push('/settings')}>
-            <Icon name="Gear" size={24} color={COLORS.textPrimary} />
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity className="absolute top-[50px] right-5 p-2.5 z-10" onPress={() => router.push('/calendar')}>
+        <TouchableOpacity style={{ position: 'absolute', top: 50, right: 20, padding: 10, zIndex: 10 }} onPress={() => router.push('/calendar')}>
           <Icon name="CalendarBlank" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
         
-        <View className="items-center mb-6">
+        <View style={{ alignItems: 'center', marginBottom: 24 }}>
           {profile?.profile_image ? (
             <Image 
               source={{ uri: `${API_BASE_URL}${profile.profile_image}` }} 
-              className="w-20 h-20 rounded-[40px] mb-3"
+              style={{ width: 90, height: 90, borderRadius: 45, marginBottom: 12 }}
               contentFit="cover" 
             />
           ) : (
-            <View className="w-20 h-20 rounded-[40px] justify-center items-center mb-3 bg-brand-primary">
-              <Text className="text-white text-4xl font-bold">{profile?.username?.[0]?.toUpperCase()}</Text>
+            <View style={{ width: 90, height: 90, borderRadius: 45, justifyContent: 'center', alignItems: 'center', marginBottom: 12, backgroundColor: COLORS.primary }}>
+              <Text style={{ color: '#fff', fontSize: 36, fontWeight: 'bold' }}>{profile?.username?.[0]?.toUpperCase()}</Text>
             </View>
           )}
-          <Text className="text-[22px] font-extrabold mb-1 text-text-lightPrimary dark:text-text-darkPrimary">@{profile?.username}</Text>
-          <Text className="text-xs text-text-lightMuted dark:text-text-darkMuted">
+          <Text style={{ fontSize: 22, fontWeight: '800', marginBottom: 4, color: COLORS.textPrimary, textAlign: 'center' }}>@{profile?.username}</Text>
+          <Text style={{ fontSize: 12, color: COLORS.textMuted, textAlign: 'center' }}>
             Katılım: {new Date(profile?.created_at).toLocaleDateString('tr-TR')}
           </Text>
           {profile?.weeklyEmotion && (() => {
@@ -279,57 +274,75 @@ export default function UserProfileScreen() {
             const emotionLabel = emotionData ? emotionData.label : profile.weeklyEmotion;
             const tagColor = emotionData ? (COLORS[emotionData.id] || COLORS.textPrimary) : COLORS.primary;
             return (
-              <View className="flex-row items-center mt-3">
-                <Text className="text-[13px] mr-1.5 text-text-lightSecondary dark:text-text-darkSecondary">Bu hafta en çok hissedilen:</Text>
-                <View className="flex-row items-center px-2.5 py-1 rounded-xl" style={{ backgroundColor: tagColor + '20' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12 }}>
+                <Text style={{ fontSize: 13, marginRight: 6, color: COLORS.textSecondary }}>Bu hafta en çok hissedilen:</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, backgroundColor: tagColor + '20' }}>
                   {emotionData && <Icon name={emotionData.iconName} size={14} color={tagColor} style={{ marginRight: 4 }} />}
-                  <Text style={{ color: tagColor }} className="text-[13px] font-bold">{emotionLabel}</Text>
+                  <Text style={{ color: tagColor, fontSize: 13, fontWeight: 'bold' }}>{emotionLabel}</Text>
                 </View>
               </View>
             );
           })()}
           
           {profile?.similarityPercentage != null && (
-            <View className="flex-row items-center mt-2.5 px-3 py-1.5 rounded-2xl border" style={{ borderColor: `${COLORS.primary}40`, backgroundColor: `${COLORS.primary}10` }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: `${COLORS.primary}40`, backgroundColor: `${COLORS.primary}10` }}>
               <Icon name="Sparkle" size={16} color={COLORS.primary} weight="fill" />
-              <Text className="text-[13px] font-bold ml-1.5 text-brand-primary">
+              <Text style={{ fontSize: 13, fontWeight: 'bold', marginLeft: 6, color: COLORS.primary }}>
                 Seninle %{profile.similarityPercentage} benzer zevke sahip
               </Text>
             </View>
           )}
         </View>
 
-        <View className="flex-row items-center mb-6">
-          <TouchableOpacity className="items-center px-6" onPress={() => openUserList('followers')}>
-            <Text className="text-xl font-bold mb-1 text-text-lightPrimary dark:text-text-darkPrimary">{profile?.followersCount || 0}</Text>
-            <Text className="text-[13px] text-text-lightSecondary dark:text-text-darkSecondary">Takipçi</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
+          <TouchableOpacity style={{ alignItems: 'center', paddingHorizontal: 24 }} onPress={() => openUserList('followers')}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 4, color: COLORS.textPrimary }}>{profile?.followersCount || 0}</Text>
+            <Text style={{ fontSize: 13, color: COLORS.textSecondary }}>Takipçi</Text>
           </TouchableOpacity>
-          <View className="w-px h-7 bg-light-border dark:bg-dark-border" />
-          <TouchableOpacity className="items-center px-6" onPress={() => openUserList('following')}>
-            <Text className="text-xl font-bold mb-1 text-text-lightPrimary dark:text-text-darkPrimary">{profile?.followingCount || 0}</Text>
-            <Text className="text-[13px] text-text-lightSecondary dark:text-text-darkSecondary">Takip Edilen</Text>
+          <View style={{ width: 1, height: 28, backgroundColor: COLORS.border }} />
+          <TouchableOpacity style={{ alignItems: 'center', paddingHorizontal: 24 }} onPress={() => openUserList('following')}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 4, color: COLORS.textPrimary }}>{profile?.followingCount || 0}</Text>
+            <Text style={{ fontSize: 13, color: COLORS.textSecondary }}>Takip Edilen</Text>
           </TouchableOpacity>
         </View>
 
         {!isMe ? (
           <TouchableOpacity 
-            className={`px-8 py-3 rounded-full min-w-[160px] items-center border ${profile?.isFollowing ? 'bg-transparent border-brand-primary' : 'bg-brand-primary border-brand-primary'}`}
+            style={{
+              paddingHorizontal: 32,
+              paddingVertical: 12,
+              borderRadius: 9999,
+              minWidth: 160,
+              alignItems: 'center',
+              borderWidth: 1,
+              backgroundColor: profile?.isFollowing ? 'transparent' : COLORS.primary,
+              borderColor: COLORS.primary,
+            }}
             onPress={handleToggleFollow}
             disabled={followLoading}
           >
-            <Text className={`text-[15px] font-bold ${profile?.isFollowing ? 'text-brand-primary' : 'text-white'}`}>
+            <Text style={{ fontSize: 15, fontWeight: 'bold', color: profile?.isFollowing ? COLORS.primary : '#fff' }}>
               {profile?.isFollowing ? 'Takiptesin' : 'Takip Et'}
             </Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity 
-            className="bg-transparent border border-light-border dark:border-dark-border px-8 py-3 rounded-full min-w-[160px] items-center"
+            style={{
+              backgroundColor: 'transparent',
+              borderWidth: 1,
+              borderColor: COLORS.border,
+              paddingHorizontal: 32,
+              paddingVertical: 12,
+              borderRadius: 9999,
+              minWidth: 160,
+              alignItems: 'center',
+            }}
             onPress={() => {
               setNewUsername(user?.username || '');
               setEditProfileModal(true);
             }}
           >
-            <Text className="text-[15px] font-bold text-text-lightPrimary dark:text-text-darkPrimary">
+            <Text style={{ fontSize: 15, fontWeight: 'bold', color: COLORS.textPrimary }}>
               Profili Düzenle
             </Text>
           </TouchableOpacity>

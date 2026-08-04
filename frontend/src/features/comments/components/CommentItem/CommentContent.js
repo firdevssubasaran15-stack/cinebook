@@ -19,6 +19,11 @@ export default function CommentContent({ comment, isFeeling }) {
       
       {comment.text ? (
         <Text className="text-[15px] leading-6 text-text-lightPrimary dark:text-text-darkPrimary">
+          {comment.replyingTo && (
+            <Text className="text-brand-primary font-bold">
+              @{comment.replyingTo}{' '}
+            </Text>
+          )}
           {comment.text}
         </Text>
       ) : null}

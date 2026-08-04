@@ -43,20 +43,38 @@ export default function SettingsScreen() {
   };
 
   return (
-    <View className="flex-1 bg-light-bg dark:bg-dark-bg">
-      <View className="flex-row items-center justify-between pt-[60px] pb-5 px-5 border-b bg-light-surfaceElevated dark:bg-dark-surfaceElevated border-light-border dark:border-dark-border">
-        <TouchableOpacity className="p-1.5" onPress={() => router.back()}>
+    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingTop: 64,
+        paddingBottom: 20,
+        paddingHorizontal: 24,
+        borderBottomWidth: 1,
+        backgroundColor: COLORS.surfaceElevated,
+        borderBottomColor: COLORS.border,
+      }}>
+        <TouchableOpacity style={{ padding: 6 }} onPress={() => router.back()}>
           <Icon name="ArrowLeft" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text className="text-lg font-bold text-text-lightPrimary dark:text-text-darkPrimary">Ayarlar</Text>
-        <View className="w-6" />
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: COLORS.textPrimary }}>Ayarlar</Text>
+        <View style={{ width: 36 }} />
       </View>
 
-      <View className="px-5">
-        <View className={`flex-row items-center justify-between py-4.5 ${user?.notifications_enabled !== 0 ? '' : 'border-b border-light-border dark:border-dark-border'}`}>
-          <View className="flex-row items-center">
+      <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
+        {/* Bildirimler */}
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingVertical: 18,
+          borderBottomWidth: user?.notifications_enabled !== 0 ? 0 : 1,
+          borderBottomColor: COLORS.border,
+        }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Icon name="Bell" size={22} color={COLORS.textSecondary} />
-            <Text className="text-base font-medium ml-4 text-text-lightPrimary dark:text-text-darkPrimary">
+            <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 16, color: COLORS.textPrimary }}>
               Bildirimler
             </Text>
           </View>
@@ -69,49 +87,72 @@ export default function SettingsScreen() {
         </View>
 
         {user?.notifications_enabled !== 0 && (
-          <View className="px-4 pb-6 border-b border-light-border dark:border-dark-border">
-            <Text className="text-sm font-semibold mb-3 text-text-lightSecondary dark:text-text-darkSecondary">Bildirim Alma Aralığı</Text>
-            <View className="flex-row justify-between gap-2">
+          <View style={{ paddingBottom: 18, borderBottomWidth: 1, borderBottomColor: COLORS.border }}>
+            <Text style={{ fontSize: 14, fontWeight: '600', marginBottom: 12, color: COLORS.textSecondary }}>Bildirim Alma Aralığı</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8 }}>
               {[
                 { label: 'Saat', value: 'hourly' },
                 { label: 'Gün', value: 'daily' },
                 { label: 'Hafta', value: 'weekly' },
                 { label: 'Ay', value: 'monthly' }
-              ].map((opt) => (
-                <TouchableOpacity
-                  key={opt.value}
-                  className={`flex-1 py-2 rounded-lg items-center border ${
-                    (user?.notification_interval || 'hourly') === opt.value
-                      ? 'bg-brand-primary border-brand-primary'
-                      : 'bg-light-surfaceElevated dark:bg-dark-surfaceElevated border-light-border dark:border-dark-border'
-                  }`}
-                  onPress={() => handleChangeInterval(opt.value)}
-                >
-                  <Text className={`text-[13px] font-semibold ${
-                    (user?.notification_interval || 'hourly') === opt.value
-                      ? 'text-white'
-                      : 'text-text-lightPrimary dark:text-text-darkPrimary'
-                  }`}>{opt.label}</Text>
-                </TouchableOpacity>
-              ))}
+              ].map((opt) => {
+                const isSelected = (user?.notification_interval || 'hourly') === opt.value;
+                return (
+                  <TouchableOpacity
+                    key={opt.value}
+                    style={{
+                      flex: 1,
+                      paddingVertical: 10,
+                      borderRadius: 12,
+                      alignItems: 'center',
+                      borderWidth: 1,
+                      backgroundColor: isSelected ? COLORS.primary : 'transparent',
+                      borderColor: isSelected ? COLORS.primary : COLORS.border,
+                    }}
+                    onPress={() => handleChangeInterval(opt.value)}
+                  >
+                    <Text style={{
+                      fontSize: 13,
+                      fontWeight: '600',
+                      color: isSelected ? '#fff' : COLORS.textPrimary,
+                    }}>{opt.label}</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
         )}
 
-        <TouchableOpacity className="flex-row items-center justify-between py-4.5 border-b border-light-border dark:border-dark-border" onPress={toggleTheme}>
-          <View className="flex-row items-center">
-            <Icon name={isDark ? "Sun" : "Moon"} size={22} color={COLORS.textSecondary} />
-            <Text className="text-base font-medium ml-4 text-text-lightPrimary dark:text-text-darkPrimary">
-              {isDark ? "Açık Temaya Geç" : "Koyu Temaya Geç"}
-            </Text>
-          </View>
+        {/* Tema Değiştir */}
+        <TouchableOpacity
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: 18,
+            borderBottomWidth: 1,
+            borderBottomColor: COLORS.border,
+          }}
+          onPress={toggleTheme}
+        >
+          <Icon name={isDark ? "Sun" : "Moon"} size={22} color={COLORS.textSecondary} />
+          <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 16, color: COLORS.textPrimary }}>
+            {isDark ? "Açık Temaya Geç" : "Koyu Temaya Geç"}
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-row items-center justify-between py-4.5 border-b border-light-border dark:border-dark-border" onPress={handleLogout}>
-          <View className="flex-row items-center">
-            <Icon name="SignOut" size={22} color={COLORS.error} />
-            <Text className="text-base font-medium ml-4 text-status-error">Çıkış Yap</Text>
-          </View>
+        {/* Çıkış Yap */}
+        <TouchableOpacity
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: 18,
+            borderBottomWidth: 1,
+            borderBottomColor: COLORS.border,
+          }}
+          onPress={handleLogout}
+        >
+          <Icon name="SignOut" size={22} color={COLORS.error} />
+          <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 16, color: COLORS.error }}>Çıkış Yap</Text>
         </TouchableOpacity>
       </View>
     </View>

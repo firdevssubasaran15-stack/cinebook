@@ -32,6 +32,16 @@ class LibraryController {
     }
   }
 
+  getCounts(req, res) {
+    try {
+      const { contentId } = req.params;
+      const counts = libraryService.getCounts(parseInt(contentId));
+      return successResponse(res, counts);
+    } catch (err) {
+      return errorResponse(res, err.message, 400);
+    }
+  }
+
   remove(req, res) {
     try {
       const { contentId } = req.params;

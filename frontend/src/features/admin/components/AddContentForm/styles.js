@@ -1,0 +1,20 @@
+export const styles = {
+  container: "bg-light-surfaceElevated dark:bg-dark-surfaceElevated rounded-2xl p-5 mb-5 border border-light-border dark:border-dark-border shadow-sm",
+  title: "text-lg font-bold text-text-lightPrimary dark:text-text-darkPrimary mb-4",
+  sectionLabel: "text-[13px] font-bold text-text-lightSecondary dark:text-text-darkSecondary mb-2",
+  typeContainer: "flex-row gap-2 mb-4",
+  typeButton: "flex-1 py-2 rounded-xl items-center border",
+  typeButtonActive: "bg-brand-primary border-brand-primary",
+  typeButtonInactive: "bg-light-bg dark:bg-dark-bg border-light-border dark:border-dark-border",
+  typeButtonTextActive: "text-[13px] font-bold text-white",
+  typeButtonTextInactive: "text-[13px] font-bold text-text-lightSecondary dark:text-text-darkSecondary",
+  inputContainer: "mb-4",
+  textInput: "bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border text-text-lightPrimary dark:text-text-darkPrimary rounded-xl px-4 py-3 h-12 text-sm",
+  textArea: "bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border text-text-lightPrimary dark:text-text-darkPrimary rounded-xl px-4 py-3 min-h-[80px] text-sm",
+  imagePickerContainer: "bg-light-bg dark:bg-dark-bg border border-light-border dark:border-dark-border border-dashed rounded-xl h-[120px] justify-center items-center overflow-hidden mb-5",
+  imagePickerText: "text-text-lightMuted dark:text-text-darkMuted font-semibold",
+  previewImage: "w-[80px] h-[120px]",
+  submitButtonContainer: "rounded-xl overflow-hidden shadow-sm",
+  submitButtonGradient: "py-3.5 items-center justify-center",
+  submitButtonText: "text-white text-[15px] font-bold"
+};

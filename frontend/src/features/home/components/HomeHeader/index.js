@@ -18,11 +18,10 @@ export default function HomeHeader({ unreadCount }) {
   return (
     <LinearGradient 
       colors={isDark ? GRADIENTS.hero : [COLORS.background, COLORS.surfaceElevated]} 
-      className="px-6 pb-6"
-      style={{ paddingTop: Math.max(insets.top + 16, 16) }}
+      style={{ paddingHorizontal: 28, paddingBottom: 24, paddingTop: Math.max(insets.top + 20, 20) }}
     >
       <View className="flex-row justify-between items-center mb-5">
-        <View className="flex-1 pr-2">
+        <View className="flex-1 pr-4">
           <Text className="text-[22px] font-extrabold text-text-lightPrimary dark:text-text-darkPrimary" numberOfLines={1}>
             Merhaba, {user?.username} 👋
           </Text>
@@ -31,7 +30,7 @@ export default function HomeHeader({ unreadCount }) {
           </Text>
         </View>
         
-        <View className="flex-row items-center gap-1.5">
+        <View className="flex-row items-center gap-3">
           <TouchableOpacity onPress={() => router.push('/(tabs)/notifications')} className="bg-transparent py-1.5 px-1.5 relative">
             <Icon name="Bell" size={24} color={isDark ? '#FFF' : COLORS.primary} weight="fill" />
             {unreadCount > 0 && (

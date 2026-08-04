@@ -5,6 +5,7 @@ import { useColorScheme } from 'nativewind';
 import { LIGHT_COLORS, DARK_COLORS } from '@/constants/colors';
 import { useAuth } from './AuthContext';
 import apiClient from '@/api/apiClient';
+import { useToastNotification } from '@/hooks/useToastNotification';
 
 const ThemeContext = createContext();
 
@@ -16,6 +17,7 @@ export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(colorScheme || systemTheme || 'dark');
   const { user, updateUser } = useAuth();
   const [isInitializing, setIsInitializing] = useState(true);
+  const { showThemeChange } = useToastNotification();
 
   // Apply user preference when logged in
   useEffect(() => {
@@ -43,6 +45,8 @@ export function ThemeProvider({ children }) {
     setColorScheme(newTheme);
     Appearance.setColorScheme(newTheme);
     await AsyncStorage.setItem('cinebook_theme', newTheme);
+    
+    showThemeChange(newTheme === 'dark');
     
     if (user) {
       try {
