@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
-import * as SplashScreen from 'expo-splash-screen';
 
 /**
  * Uygulamanın arkaplan/önplan geçişlerini takip eden Custom Hook.
@@ -18,8 +17,6 @@ export function useAppState() {
         nextAppState === 'active'
       ) {
         console.log('App has come to the foreground!');
-        // Geri dönüşte splash screen bug'ı oluyorsa zorla gizle
-        SplashScreen.hideAsync().catch(() => {});
       }
 
       appState.current = nextAppState;

@@ -14,6 +14,7 @@ export function useContentDetail(id, navigation) {
   const [editSummary, setEditSummary] = useState('');
   const [editCover, setEditCover] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [isPickingImage, setIsPickingImage] = useState(false);
 
   const fetchContent = useCallback(async () => {
     try {
@@ -68,17 +69,23 @@ export function useContentDetail(id, navigation) {
   };
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.8,
-    });
-    if (!result.canceled) {
-      const asset = result.assets[0];
-      if (asset.width !== 1000 || asset.height !== 1500) {
-        Alert.alert('Hata', `Resim boyutları 1000x1500 piksel ve 2:3 oranında olmalıdır.\n(Seçilen: ${asset.width}x${asset.height})`);
+    try {
+      setIsPickingImage(true);
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [2, 3],
+        quality: 0.8,
+      });
+      if (result.canceled) {
+        Alert.alert('Bilgi', 'Resim seçimi iptal edildi.');
         return;
       }
-      setEditCover(asset);
+      setEditCover(result.assets[0]);
+    } catch (error) {
+      Alert.alert('Hata', 'Resim seçilirken bir hata oluştu.');
+    } finally {
+      setIsPickingImage(false);
     }
   };
 
@@ -97,7 +104,9 @@ export function useContentDetail(id, navigation) {
       formData.append('summary', editSummary.trim());
       if (editCover) {
         const filename = editCover.uri.split('/').pop();
-        const ext = filename.split('.').pop();
+        let ext = filename.split('.').pop().toLowerCase();
+        if (ext === 'jpg') ext = 'jpeg';
+        
         formData.append('cover_image', {
           uri: editCover.uri,
           name: filename,
@@ -132,6 +141,7 @@ export function useContentDetail(id, navigation) {
     handleDeleteContent,
     startEditing,
     pickImage,
-    handleSaveEdit
+    handleSaveEdit,
+    isPickingImage
   };
 }

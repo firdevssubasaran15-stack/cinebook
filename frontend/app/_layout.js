@@ -6,8 +6,6 @@ import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View } from 'react-native';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
 import { useAppState } from '@/hooks/useAppState';
 
 // React Navigation bellek yönetimindeki donma/siyah ekran sorunlarını engellemek için.
@@ -68,15 +66,6 @@ import Toast from 'react-native-toast-message';
 import { toastConfig } from '@/config/toastConfig';
 
 export default function RootLayout() {
-  useEffect(() => {
-    // Expo Router'ın Splash ekranını gizleyemediği uç durumlar (örneğin deep link takılmaları) için 
-    // 2.5 saniye sonra Splash ekranını zorla gizliyoruz.
-    const timer = setTimeout(() => {
-      SplashScreen.hideAsync().catch(() => {});
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
