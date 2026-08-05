@@ -5,16 +5,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { GRADIENTS } from '@/constants/colors';
 import { useAddContent } from '@/features/admin/hooks/useAddContent';
 import { styles } from './styles';
-
-const CONTENT_TYPES = [
-  { value: 'movie', label: '🎬 Film' },
-  { value: 'series', label: '📺 Dizi' },
-  { value: 'book', label: '📚 Kitap' },
-];
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function AddContentForm({ onSuccess }) {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
   
+  const CONTENT_TYPES = [
+    { value: 'movie', label: t('admin.movie') },
+    { value: 'series', label: t('admin.series') },
+    { value: 'book', label: t('admin.book') },
+  ];
+
   const {
     type, setType,
     title, setTitle,
@@ -28,10 +30,10 @@ export default function AddContentForm({ onSuccess }) {
 
   return (
     <View className={styles.container}>
-      <Text className={styles.title}>📦 Yeni İçerik Ekle</Text>
+      <Text className={styles.title}>{t('admin.addContentTitle')}</Text>
 
       {/* Tür Seçimi */}
-      <Text className={styles.sectionLabel}>İçerik Türü</Text>
+      <Text className={styles.sectionLabel}>{t('admin.contentType')}</Text>
       <View className={styles.typeContainer}>
         {CONTENT_TYPES.map((ct) => (
           <TouchableOpacity
@@ -48,8 +50,8 @@ export default function AddContentForm({ onSuccess }) {
 
       {/* Form Alanları */}
       {[
-        { label: 'Başlık', value: title, onChange: setTitle, placeholder: 'İçerik adı...' },
-        { label: type === 'book' ? 'Yazar' : 'Yönetmen', value: directorAuthor, onChange: setDirectorAuthor, placeholder: 'Yazar/Yönetmen adı...' },
+        { label: t('admin.titleLabel', { defaultValue: t('contentEdit.titleLabel') }), value: title, onChange: setTitle, placeholder: t('admin.contentNamePlaceholder') },
+        { label: type === 'book' ? t('detail.author') : t('detail.director'), value: directorAuthor, onChange: setDirectorAuthor, placeholder: t('admin.authorDirectorPlaceholder') },
       ].map((field) => (
         <View key={field.label} className={styles.inputContainer}>
           <Text className={styles.sectionLabel}>{field.label}</Text>
@@ -64,12 +66,12 @@ export default function AddContentForm({ onSuccess }) {
       ))}
 
       <View className={styles.inputContainer}>
-        <Text className={styles.sectionLabel}>Özet</Text>
+        <Text className={styles.sectionLabel}>{t('contentEdit.summaryLabel')}</Text>
         <TextInput
           className={styles.textArea}
           value={summary}
           onChangeText={setSummary}
-          placeholder="Kısa özet..."
+          placeholder={t('admin.summaryPlaceholder')}
           placeholderTextColor={COLORS.textMuted}
           multiline
           textAlignVertical="top"
@@ -81,7 +83,7 @@ export default function AddContentForm({ onSuccess }) {
         {coverImage ? (
           <RNImage source={{ uri: coverImage.uri }} className={styles.previewImage} resizeMode="cover" />
         ) : (
-          <Text className={styles.imagePickerText}>🖼️ Kapak Resmi Seç</Text>
+          <Text className={styles.imagePickerText}>{t('admin.selectCover')}</Text>
         )}
       </TouchableOpacity>
 
@@ -96,7 +98,7 @@ export default function AddContentForm({ onSuccess }) {
           start={{ x: 0, y: 0 }} 
           end={{ x: 1, y: 0 }}
         >
-          {loading ? <ActivityIndicator color="#fff" /> : <Text className={styles.submitButtonText}>İçerik Ekle</Text>}
+          {loading ? <ActivityIndicator color="#fff" /> : <Text className={styles.submitButtonText}>{t('admin.addContentBtn')}</Text>}
         </LinearGradient>
       </TouchableOpacity>
     </View>

@@ -6,10 +6,12 @@ import { useTheme } from '@/context/ThemeContext';
 import Icon from '@/features/icon/components/Icon';
 import { useSettings } from '@/features/settings/hooks/useSettings';
 import { getSettingsStyles } from '@/features/settings/styles/settings.styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function SettingsScreen() {
   const { user, logout, updateUser } = useAuth();
   const { colors: COLORS, toggleTheme, isDark } = useTheme();
+  const { currentLanguage, toggleLanguage, t } = useLanguage();
   
   const {
     handleToggleNotifications,
@@ -25,7 +27,7 @@ export default function SettingsScreen() {
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Icon name="ArrowLeft" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Ayarlar</Text>
+        <Text style={styles.headerTitle}>{t('settings.title')}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -35,7 +37,7 @@ export default function SettingsScreen() {
           <View style={styles.settingLabelRow}>
             <Icon name="Bell" size={22} color={COLORS.textSecondary} />
             <Text style={styles.settingLabel}>
-              Bildirimler
+              {t('settings.notificationsTitle')}
             </Text>
           </View>
           <Switch
@@ -48,13 +50,13 @@ export default function SettingsScreen() {
 
         {user?.notifications_enabled !== 0 && (
           <View style={styles.intervalSection}>
-            <Text style={styles.intervalTitle}>Bildirim Alma Aralığı</Text>
+            <Text style={styles.intervalTitle}>{t('settings.notificationInterval')}</Text>
             <View style={styles.intervalOptionsRow}>
               {[
-                { label: 'Saat', value: 'hourly' },
-                { label: 'Gün', value: 'daily' },
-                { label: 'Hafta', value: 'weekly' },
-                { label: 'Ay', value: 'monthly' }
+                { label: t('settings.hour'), value: 'hourly' },
+                { label: t('settings.day'), value: 'daily' },
+                { label: t('settings.week'), value: 'weekly' },
+                { label: t('settings.month'), value: 'monthly' }
               ].map((opt) => {
                 const isSelected = (user?.notification_interval || 'hourly') === opt.value;
                 return (
@@ -78,9 +80,25 @@ export default function SettingsScreen() {
         >
           <Icon name={isDark ? "Sun" : "Moon"} size={22} color={COLORS.textSecondary} />
           <Text style={styles.actionText}>
-            {isDark ? "Açık Temaya Geç" : "Koyu Temaya Geç"}
+            {isDark ? t('settings.lightTheme') : t('settings.darkTheme')}
           </Text>
         </TouchableOpacity>
+
+        {/* Dil Değiştir (Language Toggle) */}
+        <View style={styles.notificationToggleRow}>
+          <View style={styles.settingLabelRow}>
+            <Icon name="Globe" size={22} color={COLORS.textSecondary} />
+            <Text style={styles.settingLabel}>
+              {t('settings.language.title')} ({currentLanguage === 'en' ? t('settings.language.english') : t('settings.language.turkish')})
+            </Text>
+          </View>
+          <Switch
+            value={currentLanguage === 'tr'}
+            onValueChange={toggleLanguage}
+            trackColor={{ false: COLORS.border, true: COLORS.primary }}
+            thumbColor={'#fff'}
+          />
+        </View>
 
         {/* Çıkış Yap */}
         <TouchableOpacity
@@ -88,7 +106,7 @@ export default function SettingsScreen() {
           onPress={handleLogout}
         >
           <Icon name="SignOut" size={22} color={COLORS.error} />
-          <Text style={styles.logoutText}>Çıkış Yap</Text>
+          <Text style={styles.logoutText}>{t('settings.logout')}</Text>
         </TouchableOpacity>
       </View>
     </View>

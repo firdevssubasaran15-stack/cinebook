@@ -3,9 +3,11 @@ import { View, Text, ActivityIndicator } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
 import CommentThread from '../../../CommentThread';
 import { CommentsSectionStyles as styles } from '../../styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function CommentList({ state, actions, user, isModerator, privileges, onShare }) {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
 
   if (state.loading) {
     return <ActivityIndicator color={COLORS.primary} />;
@@ -14,7 +16,7 @@ export default function CommentList({ state, actions, user, isModerator, privile
   if (state.commentTree.length === 0) {
     return (
       <Text className={styles.emptyState}>
-        Henüz yorum yok. İlk yorumu sen yap!
+        {t('commentsSection.empty')}
       </Text>
     );
   }

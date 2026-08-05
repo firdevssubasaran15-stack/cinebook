@@ -24,6 +24,7 @@ import ShareBottomSheet from '@/features/share/components/ShareBottomSheet';
 import FeelingsSection from '@/features/feelings/components/FeelingsSection';
 import ContentEditForm from '@/features/content/components/ContentEditForm';
 import ContentCover from '@/features/content/components/ContentCover';
+import { useLanguage } from '@/hooks/useLanguage';
 
 // Ana Detay Ekranı
 export default function DetailScreen() {
@@ -31,6 +32,7 @@ export default function DetailScreen() {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
   const { isAdmin } = useAuth();
+  const { t } = useLanguage();
   
   const { 
     isShareModalVisible, 
@@ -65,12 +67,12 @@ export default function DetailScreen() {
   }
 
   if (!content) {
-    return <View className={styles.notFoundContainer}><Text className={styles.notFoundText}>İçerik bulunamadı.</Text></View>;
+    return <View className={styles.notFoundContainer}><Text className={styles.notFoundText}>{t('detail.notFoundText')}</Text></View>;
   }
 
   const typeIcon = content.type === 'movie' ? 'FilmStrip' : content.type === 'series' ? 'Television' : 'Books';
-  const typeLabel = content.type === 'movie' ? 'Film' : content.type === 'series' ? 'Dizi' : 'Kitap';
-  const authorLabel = content.type === 'book' ? 'Yazar' : 'Yönetmen';
+  const typeLabel = content.type === 'movie' ? t('detail.movie') : content.type === 'series' ? t('detail.series') : t('detail.book');
+  const authorLabel = content.type === 'book' ? t('detail.author') : t('detail.director');
 
   const coverUri = content.cover_image ? `${API_BASE_URL}${content.cover_image}` : null;
 
@@ -103,11 +105,11 @@ export default function DetailScreen() {
               <View className={styles.adminButtonsRow}>
                 <TouchableOpacity onPress={startEditing} className={styles.editButton}>
                   <Icon name="Pencil" size={14} color={COLORS.primary} weight="bold" />
-                  <Text className={styles.editButtonText}>Düzenle</Text>
+                  <Text className={styles.editButtonText}>{t('detail.edit')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleDeleteContent} className={styles.deleteButton}>
                   <Icon name="Trash" size={14} color="#ef4444" weight="bold" />
-                  <Text className={styles.deleteButtonText}>Sil</Text>
+                  <Text className={styles.deleteButtonText}>{t('detail.delete')}</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -132,7 +134,7 @@ export default function DetailScreen() {
               <Text className={styles.authorText}>{authorLabel}: {content.director_author}</Text>
               {content.summary ? (
                 <View className={styles.summaryContainer}>
-                  <Text className={styles.summaryTitle}>Özet</Text>
+                  <Text className={styles.summaryTitle}>{t('detail.summary')}</Text>
                   <Text className={styles.summaryText}>{content.summary}</Text>
                 </View>
               ) : null}
@@ -141,7 +143,7 @@ export default function DetailScreen() {
 
           {content.top_emotions && content.top_emotions.length > 0 && (
             <View className={styles.topEmotionsContainer}>
-              <Text className={styles.topEmotionsTitle}>Bu içerikte en çok hissedilenler:</Text>
+              <Text className={styles.topEmotionsTitle}>{t('detail.topEmotionsTitle')}</Text>
               <View className={styles.topEmotionsRow}>
                 {content.top_emotions.map(tagId => {
                   const tagData = EMOTION_TAGS.find(t => t.id === tagId);

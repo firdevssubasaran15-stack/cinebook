@@ -4,23 +4,25 @@ import Icon from '@/features/icon/components/Icon';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { useLibraryStatus } from './useLibraryStatus';
-import { BOOK_STATUS_OPTIONS, MEDIA_STATUS_OPTIONS } from '@/constants/library';
+import { getBookStatusOptions, getMediaStatusOptions } from '@/constants/library';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function LibraryStatusSelector({ contentId, type }) {
   const { colors: COLORS } = useTheme();
   const { user } = useAuth();
+  const { t } = useLanguage();
   
   const { state, actions } = useLibraryStatus(contentId, user);
   const { status, counts, loading } = state;
 
   // We can show counts even to non-logged users. But if user wants interactions, they need to log in.
   // Actually, we show the whole component if it's available.
-  const options = type === 'book' ? BOOK_STATUS_OPTIONS : MEDIA_STATUS_OPTIONS;
+  const options = type === 'book' ? getBookStatusOptions(t) : getMediaStatusOptions(t);
 
   return (
     <View className="mt-5 mb-2.5">
       <Text className="text-text-lightSecondary dark:text-text-darkSecondary text-[13px] font-semibold mb-2 uppercase tracking-wide">
-        Kitaplığım
+        {t('library.myLibrary')}
       </Text>
       
       {loading ? (

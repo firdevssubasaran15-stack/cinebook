@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Icon from '@/features/icon/components/Icon';
 import { detailStyles as styles } from '@/features/content/styles/detail.styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function ContentEditForm({
   editTitle,
@@ -15,10 +16,12 @@ export default function ContentEditForm({
   onCancel,
   onSave
 }) {
+  const { t } = useLanguage();
+
   return (
     <View className={styles.editingContainer}>
       <View>
-        <Text className={styles.editInputLabel}>Başlık</Text>
+        <Text className={styles.editInputLabel}>{t('contentEdit.titleLabel')}</Text>
         <TextInput 
           className={styles.editInput} 
           value={editTitle} 
@@ -34,7 +37,7 @@ export default function ContentEditForm({
         />
       </View>
       <View>
-        <Text className={styles.editInputLabel}>Özet</Text>
+        <Text className={styles.editInputLabel}>{t('contentEdit.summaryLabel')}</Text>
         <TextInput 
           className={styles.editSummaryInput} 
           value={editSummary} 
@@ -45,7 +48,7 @@ export default function ContentEditForm({
       </View>
       <View className={styles.editButtonsRow}>
         <TouchableOpacity className={styles.cancelEditButton} onPress={onCancel}>
-          <Text className={styles.cancelEditText}>İptal</Text>
+          <Text className={styles.cancelEditText}>{t('contentEdit.cancel')}</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           className={styles.saveEditButton} 
@@ -57,7 +60,7 @@ export default function ContentEditForm({
           ) : (
             <>
               <Icon name="Check" size={16} color="#fff" weight="bold" />
-              <Text className={styles.saveEditText}>Kaydet</Text>
+              <Text className={styles.saveEditText}>{t('contentEdit.save')}</Text>
             </>
           )}
         </TouchableOpacity>

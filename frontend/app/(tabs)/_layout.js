@@ -7,10 +7,12 @@ import { useInvitations } from '@/features/layout/hooks/useInvitations';
 import TabIcon from '@/features/layout/components/TabIcon';
 import InvitationToast from '@/features/layout/components/InvitationToast';
 import { layoutStyles as styles } from '@/features/layout/styles/layout.styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function TabsLayout() {
   const { user, isAdmin, privileges } = useAuth();
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
 
   const {
     invitation,
@@ -40,7 +42,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="home"
           options={{
-            title: 'Ana Sayfa',
+            title: t('tabs.home'),
             headerShown: false,
             tabBarIcon: ({ focused }) => <TabIcon name="House" focused={focused} colors={COLORS} />,
           }}
@@ -48,28 +50,28 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="movies"
           options={{
-            title: 'Filmler',
+            title: t('tabs.movies'),
             tabBarIcon: ({ focused }) => <TabIcon name="FilmStrip" focused={focused} colors={COLORS} />,
           }}
         />
         <Tabs.Screen
           name="series"
           options={{
-            title: 'Diziler',
+            title: t('tabs.series'),
             tabBarIcon: ({ focused }) => <TabIcon name="Television" focused={focused} colors={COLORS} />,
           }}
         />
         <Tabs.Screen
           name="books"
           options={{
-            title: 'Kitaplar',
+            title: t('tabs.books'),
             tabBarIcon: ({ focused }) => <TabIcon name="Books" focused={focused} colors={COLORS} />,
           }}
         />
         <Tabs.Screen
           name="library"
           options={{
-            title: 'Kitaplık',
+            title: t('tabs.library'),
             headerShown: false,
             tabBarIcon: ({ focused }) => <TabIcon name="BookmarkSimple" focused={focused} colors={COLORS} />,
           }}
@@ -78,14 +80,14 @@ export default function TabsLayout() {
           name="notifications"
           options={{
             href: null,
-            title: 'Bildirimler',
+            title: t('tabs.notifications'),
           }}
         />
         {(isAdmin || privileges?.can_view_admin_panel === 1) ? (
           <Tabs.Screen
             name="admin-dashboard"
             options={{
-              title: 'Admin',
+              title: t('tabs.admin'),
               headerShown: false,
               tabBarIcon: ({ focused }) => <TabIcon name="Gear" focused={focused} colors={COLORS} />,
             }}

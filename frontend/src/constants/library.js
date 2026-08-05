@@ -1,19 +1,19 @@
-export const LIBRARY_TABS = [
-  { id: 'will_watch', label: 'İzleyeceğim', icon: 'BookmarkSimple' },
-  { id: 'watched', label: 'İzledim', icon: 'CheckCircle' },
-  { id: 'watching_reading', label: 'Devam Ediyor', icon: 'Hourglass' },
-  { id: 'will_read', label: 'Okuyacağım', icon: 'BookmarkSimple' },
-  { id: 'read', label: 'Okudum', icon: 'CheckCircle' },
+export const getLibraryTabs = (t) => [
+  { id: 'will_watch', label: t('library.willWatch'), icon: 'BookmarkSimple' },
+  { id: 'watched', label: t('library.watched'), icon: 'CheckCircle' },
+  { id: 'watching_reading', label: t('library.inProgress'), icon: 'Hourglass' },
+  { id: 'will_read', label: t('library.willRead'), icon: 'BookmarkSimple' },
+  { id: 'read', label: t('library.read'), icon: 'CheckCircle' },
 ];
 
-export const BOOK_STATUS_OPTIONS = [
-  { id: 'will_read', label: 'Okuyacağım', icon: 'BookmarkSimple' },
-  { id: 'read', label: 'Okudum', icon: 'CheckCircle' },
-  { id: 'reading', label: 'Devam Ediyor', icon: 'BookOpen' }
+export const getBookStatusOptions = (t) => [
+  { id: 'will_read', label: t('library.willRead'), icon: 'BookmarkSimple' },
+  { id: 'read', label: t('library.read'), icon: 'CheckCircle' },
+  { id: 'reading', label: t('library.inProgress'), icon: 'BookOpen' }
 ];
 
-export const MEDIA_STATUS_OPTIONS = [
-  { id: 'will_watch', label: 'İzleyeceğim', icon: 'BookmarkSimple' },
-  { id: 'watched', label: 'İzledim', icon: 'CheckCircle' },
-  { id: 'watching', label: 'Devam Ediyor', icon: 'MonitorPlay' }
+export const getMediaStatusOptions = (t) => [
+  { id: 'will_watch', label: t('library.willWatch'), icon: 'BookmarkSimple' },
+  { id: 'watched', label: t('library.watched'), icon: 'CheckCircle' },
+  { id: 'watching', label: t('library.inProgress'), icon: 'MonitorPlay' }
 ];

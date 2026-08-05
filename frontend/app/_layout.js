@@ -1,4 +1,5 @@
 import '../global.css';
+import '@/locales/i18n';
 import { Stack } from 'expo-router';
 import { ThemeProvider as NavThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { AuthProvider } from '@/context/AuthContext';

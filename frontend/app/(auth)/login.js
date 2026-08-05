@@ -8,8 +8,10 @@ import AuthHeader from '@/features/auth/components/AuthHeader';
 import AuthInput from '@/features/auth/components/AuthInput';
 import AuthButton from '@/features/auth/components/AuthButton';
 import RememberMeCheckbox from '@/features/auth/components/RememberMeCheckbox';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function LoginScreen() {
+  const { t } = useLanguage();
   const {
     username,
     setUsername,
@@ -26,33 +28,33 @@ export default function LoginScreen() {
       <AuthHeader 
         emoji="🎬" 
         title="CineBook" 
-        subtitle="Film, Dizi & Kitap Dünyanda Kaybol" 
+        subtitle={t('login.headerSubtitle')} 
       />
 
       <View className="rounded-3xl p-7 border bg-light-surface border-light-border dark:bg-dark-surface dark:border-dark-border">
         <Text className="text-2xl font-bold mb-6 text-text-lightPrimary dark:text-text-darkPrimary">
-          Giriş Yap
+          {t('login.title')}
         </Text>
 
         <AuthInput
-          label="Kullanıcı Adı veya E-posta"
+          label={t('login.emailLabel')}
           value={username}
           onChangeText={setUsername}
-          placeholder="Kullanıcı adı veya e-posta girin"
+          placeholder={t('login.emailPlaceholder')}
         />
 
         <AuthInput
-          label="Şifre"
+          label={t('login.passwordLabel')}
           value={password}
           onChangeText={setPassword}
-          placeholder="Şifrenizi girin"
+          placeholder={t('login.passwordPlaceholder')}
           secure={true}
         />
 
         <RememberMeCheckbox checked={rememberMe} onChange={setRememberMe} />
 
         <AuthButton
-          title="Giriş Yap"
+          title={t('login.button.title')}
           onPress={handleLogin}
           gradientColors={GRADIENTS.primary}
           loading={loading}
@@ -63,7 +65,7 @@ export default function LoginScreen() {
           onPress={() => router.push('/(auth)/register')}
         >
           <Text className="text-sm text-text-lightSecondary dark:text-text-darkSecondary">
-            Hesabın yok mu? <Text className="font-bold text-brand-primary">Kayıt Ol</Text>
+            {t('login.noAccount')} <Text className="font-bold text-brand-primary">{t('login.registerLink')}</Text>
           </Text>
         </TouchableOpacity>
       </View>

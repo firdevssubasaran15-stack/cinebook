@@ -5,6 +5,7 @@ import { useTheme } from '@/context/ThemeContext';
 import Icon from '@/features/icon/components/Icon';
 import { EMOTION_TAGS } from '@/constants/emotions';
 import { styles } from './styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const TAILWIND_COLORS = [
   '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e',
@@ -22,6 +23,7 @@ export default function MoodModal({
   onClearRecommendations
 }) {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
 
   const randomizedEmotions = useMemo(() => {
     const shuffledColors = [...TAILWIND_COLORS].sort(() => 0.5 - Math.random());
@@ -41,7 +43,7 @@ export default function MoodModal({
       <View className={styles.overlay}>
         <View className={styles.modalContainer}>
           <View className={styles.header}>
-            <Text className={styles.title}>Bugün nasıl hissetmek istersiniz?</Text>
+            <Text className={styles.title}>{t('moodModal.title')}</Text>
             <TouchableOpacity onPress={onClose} className={styles.closeButton}>
               <Icon name="X" size={24} color={COLORS.textSecondary} />
             </TouchableOpacity>
@@ -70,7 +72,7 @@ export default function MoodModal({
                 <ActivityIndicator size="large" color={COLORS.primary} className={styles.loadingIndicator} />
               ) : (
                 <View>
-                  <Text className={styles.recommendationsTitle}>Sizin için seçtiklerimiz:</Text>
+                  <Text className={styles.recommendationsTitle}>{t('moodModal.recommendationsTitle')}</Text>
                   {['movie', 'series', 'book'].map(type => {
                     const item = moodRecommendations[type];
                     if (!item) return null;
@@ -90,20 +92,20 @@ export default function MoodModal({
                           <Text className={styles.recommendationTitle} numberOfLines={1}>{item.title}</Text>
                           <Text className={styles.recommendationAuthor} numberOfLines={1}>{item.director_author}</Text>
                           <View className={styles.typeBadgeContainer} style={{ backgroundColor: `${COLORS.primary}20` }}>
-                            <Text className={styles.typeBadgeText}>{type === 'movie' ? 'Film' : type === 'series' ? 'Dizi' : 'Kitap'}</Text>
+                            <Text className={styles.typeBadgeText}>{type === 'movie' ? t('detail.movie') : type === 'series' ? t('detail.series') : t('detail.book')}</Text>
                           </View>
                         </View>
                       </TouchableOpacity>
                     );
                   })}
                   {!moodRecommendations.movie && !moodRecommendations.series && !moodRecommendations.book && (
-                    <Text className={styles.emptyText}>Bu duyguya ait henüz bir öneri bulunamadı.</Text>
+                    <Text className={styles.emptyText}>{t('moodModal.emptyRecommendations')}</Text>
                   )}
                   <TouchableOpacity
                     onPress={onClearRecommendations}
                     className={styles.backButton}
                   >
-                    <Text className={styles.backButtonText}>Geri Dön</Text>
+                    <Text className={styles.backButtonText}>{t('moodModal.goBack')}</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -115,7 +117,7 @@ export default function MoodModal({
             onPress={onToggleDoNotShowToday}
           >
             <Icon name={doNotShowToday ? 'CheckSquare' : 'Square'} size={20} color={doNotShowToday ? COLORS.primary : COLORS.textMuted} />
-            <Text className={styles.doNotShowText}>Bugün tekrar gösterme</Text>
+            <Text className={styles.doNotShowText}>{t('moodModal.doNotShowToday')}</Text>
           </TouchableOpacity>
         </View>
       </View>

@@ -19,10 +19,12 @@ import EmotionTagSelector from '@/features/feelings/components/EmotionTagSelecto
 import CommentItem from '@/features/comments/components/CommentItem';
 import { useFeelings } from '@/features/feelings/hooks/useFeelings';
 import { feelingsSectionStyles as fStyles } from '@/features/feelings/styles/feelingsSection.styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function FeelingsSection({ contentId, onShare }) {
   const { user, isAdmin, privileges } = useAuth();
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
   const isModerator = isAdmin || privileges?.can_moderate_content === 1;
 
   const {
@@ -48,14 +50,14 @@ export default function FeelingsSection({ contentId, onShare }) {
       <View className={fStyles.headerRow}>
         <View className={fStyles.headerTitleRow}>
           <Icon name="Sparkle" size={20} color={COLORS.primary} weight="fill" />
-          <Text className={fStyles.headerTitle}>Bana Hissettirdikleri</Text>
+          <Text className={fStyles.headerTitle}>{t('feelings.title')}</Text>
         </View>
         {privileges?.can_post_feelings !== 0 && (
           <TouchableOpacity
             className={fStyles.toggleFormButton}
             onPress={() => setShowForm(!showForm)}
           >
-            <Text className={fStyles.toggleFormText}>{showForm ? 'İptal' : '+ Paylaş'}</Text>
+            <Text className={fStyles.toggleFormText}>{showForm ? t('feelings.cancel') : t('feelings.sharePlus')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -84,12 +86,12 @@ export default function FeelingsSection({ contentId, onShare }) {
 
       {showForm && (
         <View className={fStyles.formContainer}>
-          <Text className={fStyles.formTitle}>Neler Hissettirdi?</Text>
+          <Text className={fStyles.formTitle}>{t('feelings.formTitle')}</Text>
           <TextInput
             className={fStyles.formInput}
             value={newText}
             onChangeText={setNewText}
-            placeholder="Bu içerik sana neler hissettirdi? Özgürce yaz..."
+            placeholder={t('feelings.placeholder')}
             placeholderTextColor={COLORS.textMuted}
             multiline
             numberOfLines={5}
@@ -104,7 +106,7 @@ export default function FeelingsSection({ contentId, onShare }) {
             <LinearGradient colors={GRADIENTS.primary} className={fStyles.submitButtonGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
               {submitting ? <ActivityIndicator color="#fff" /> : (
                 <View className={fStyles.submitButtonRow}>
-                  <Text className={fStyles.submitButtonText}>Paylaş</Text>
+                  <Text className={fStyles.submitButtonText}>{t('feelings.share')}</Text>
                   <Icon name="Sparkle" size={16} color="#fff" weight="fill" />
                 </View>
               )}
@@ -117,7 +119,7 @@ export default function FeelingsSection({ contentId, onShare }) {
         <ActivityIndicator color={COLORS.primary} />
       ) : feelings.length === 0 ? (
         <Text className={fStyles.emptyText}>
-          {tagFilter ? 'Bu etiketle paylaşım yok.' : 'Henüz kimse paylaşmamış. İlk sen ol!'}
+          {tagFilter ? t('feelings.emptyTag') : t('feelings.empty')}
         </Text>
       ) : (
         feelings.map((f) => (

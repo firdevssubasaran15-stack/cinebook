@@ -4,9 +4,11 @@ import { useTheme } from '@/context/ThemeContext';
 import Icon from '@/features/icon/components/Icon';
 import { EMOTION_TAGS } from '@/constants/emotions';
 import { userProfileStyles as styles } from '@/features/user/styles/userProfile.styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function UserWeeklyEmotionBadge({ emotionId, profile, onPress }) {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
 
   if (!emotionId) return null;
 
@@ -16,7 +18,7 @@ export default function UserWeeklyEmotionBadge({ emotionId, profile, onPress }) 
 
   return (
     <View style={styles.emotionContainer}>
-      <Text style={[styles.emotionLabel, { color: COLORS.textSecondary }]}>Bu hafta en çok hissedilen:</Text>
+      <Text style={[styles.emotionLabel, { color: COLORS.textSecondary }]}>{t('userProfile.userWeeklyEmotionTitle')}</Text>
       <TouchableOpacity 
         style={[styles.emotionBadge, { backgroundColor: tagColor + '20' }]} 
         onPress={() => onPress({

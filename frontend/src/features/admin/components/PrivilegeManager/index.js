@@ -5,20 +5,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { GRADIENTS } from '@/constants/colors';
 import { usePrivilegeManager } from '@/features/admin/hooks/usePrivilegeManager';
 import { styles } from './styles';
-
-const PRIVILEGE_LABELS = {
-  can_comment: '💬 Yorum Yapabilir',
-  can_post_feelings: '💫 Hissettirdikleri Paylaşabilir',
-  can_view_movies: '🎬 Filmleri Görebilir',
-  can_view_series: '📺 Dizileri Görebilir',
-  can_view_books: '📚 Kitapları Görebilir',
-  can_view_admin_panel: '⚙️ Admin Panelini Görebilir',
-  can_moderate_content: '🗑️ İçerikleri Silebilir (Moderatör)',
-};
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function PrivilegeManager() {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
   
+  const PRIVILEGE_LABELS = {
+    can_comment: t('admin.privileges.can_comment'),
+    can_post_feelings: t('admin.privileges.can_post_feelings'),
+    can_view_movies: t('admin.privileges.can_view_movies'),
+    can_view_series: t('admin.privileges.can_view_series'),
+    can_view_books: t('admin.privileges.can_view_books'),
+    can_view_admin_panel: t('admin.privileges.can_view_admin_panel'),
+    can_moderate_content: t('admin.privileges.can_moderate_content'),
+  };
+
   const {
     searchUsername, setSearchUsername,
     searchResults,
@@ -33,14 +35,14 @@ export default function PrivilegeManager() {
 
   return (
     <View className={styles.container}>
-      <Text className={styles.title}>👤 Kullanıcı Yetki Yönetimi</Text>
+      <Text className={styles.title}>{t('admin.privilegeTitle')}</Text>
 
       <View className={styles.searchContainer}>
         <TextInput
           className={styles.searchInput}
           value={searchUsername}
           onChangeText={setSearchUsername}
-          placeholder="Kullanıcı adı ara..."
+          placeholder={t('admin.searchUserPlaceholder')}
           placeholderTextColor={COLORS.textMuted}
           autoCapitalize="none"
           onSubmitEditing={handleSearch}
@@ -77,7 +79,7 @@ export default function PrivilegeManager() {
       {selectedUser && !selectedUser.is_admin && (
         <View className={styles.privilegesBox}>
           <Text className={styles.privilegesHeader}>
-            {selectedUser.username} için Yetkiler
+            {t('admin.privilegesFor', { username: selectedUser.username })}
           </Text>
           {Object.entries(PRIVILEGE_LABELS).map(([key, label]) => (
             <TouchableOpacity
@@ -103,7 +105,7 @@ export default function PrivilegeManager() {
               start={{ x: 0, y: 0 }} 
               end={{ x: 1, y: 0 }}
             >
-              {saving ? <ActivityIndicator color="#fff" /> : <Text className={styles.saveButtonText}>Yetkileri Kaydet</Text>}
+              {saving ? <ActivityIndicator color="#fff" /> : <Text className={styles.saveButtonText}>{t('admin.savePrivileges')}</Text>}
             </LinearGradient>
           </TouchableOpacity>
         </View>

@@ -6,9 +6,11 @@ import FeedCommentItem from '@/features/comments/components/FeedCommentItem';
 import { useShareManager } from '../../../share/hooks/useShareManager';
 import ShareBottomSheet from '../../../share/components/ShareBottomSheet';
 import { styles } from './styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function HomeFeed({ feedComments, onToggleLike, onToggleDislike }) {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
   const { 
     isShareModalVisible, 
     shareData, 
@@ -23,12 +25,12 @@ export default function HomeFeed({ feedComments, onToggleLike, onToggleDislike }
         <View className={styles.headerContainer}>
         <View className={styles.headerTitleContainer}>
           <Icon name="ChatCircle" size={20} color={COLORS.primary} weight="fill" />
-          <Text className={styles.titleText}>Son Yorumlar</Text>
+          <Text className={styles.titleText}>{t('homeFeed.recentComments')}</Text>
         </View>
       </View>
 
       {feedComments.length === 0 ? (
-        <Text className={styles.emptyText}>Henüz yorum yapılmamış.</Text>
+        <Text className={styles.emptyText}>{t('homeFeed.empty')}</Text>
       ) : (
         <View>
           {feedComments.map((comment) => (

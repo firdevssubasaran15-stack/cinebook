@@ -15,24 +15,24 @@ const captureImage = async (viewShotRef) => {
   }
 };
 
-export const SHARE_STRATEGIES = [
+export const getShareStrategies = (t) => [
   {
     id: 'instagram_story',
-    label: 'Story\'de Paylaş',
+    label: t('shareStrategies.story'),
     icon: 'InstagramLogo', 
     color: '#E1306C',
     action: async (shareData, hooks, viewShotRef) => {
       const uri = await captureImage(viewShotRef);
-      if (!uri) return hooks.showToast('Görsel oluşturulamadı.');
+      if (!uri) return hooks.showToast(t('shareStrategies.imageError'));
       
       const isAvailable = await Sharing.isAvailableAsync();
       if (!isAvailable) {
-        return hooks.showToast('Paylaşım bu cihazda desteklenmiyor.');
+        return hooks.showToast(t('shareStrategies.notSupported'));
       }
       
       await Sharing.shareAsync(uri, {
         mimeType: 'image/png',
-        dialogTitle: 'Story\'de Paylaş'
+        dialogTitle: t('shareStrategies.story')
       });
     }
   },
@@ -43,13 +43,13 @@ export const SHARE_STRATEGIES = [
     color: '#25D366',
     action: async (shareData, hooks, viewShotRef) => {
       const uri = await captureImage(viewShotRef);
-      if (!uri) return hooks.showToast('Görsel oluşturulamadı.');
+      if (!uri) return hooks.showToast(t('shareStrategies.imageError'));
       
       const isAvailable = await Sharing.isAvailableAsync();
       if (isAvailable) {
-        await Sharing.shareAsync(uri, { dialogTitle: 'WhatsApp ile Paylaş' });
+        await Sharing.shareAsync(uri, { dialogTitle: t('shareStrategies.whatsappTitle') });
       } else {
-        hooks.showToast('Paylaşım bu cihazda desteklenmiyor.');
+        hooks.showToast(t('shareStrategies.notSupported'));
       }
     }
   },
@@ -60,44 +60,44 @@ export const SHARE_STRATEGIES = [
     color: '#0088cc',
     action: async (shareData, hooks, viewShotRef) => {
       const uri = await captureImage(viewShotRef);
-      if (!uri) return hooks.showToast('Görsel oluşturulamadı.');
+      if (!uri) return hooks.showToast(t('shareStrategies.imageError'));
       
       if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(uri, { dialogTitle: 'Telegram ile Paylaş' });
+        await Sharing.shareAsync(uri, { dialogTitle: t('shareStrategies.telegramTitle') });
       }
     }
   },
   {
     id: 'copy',
-    label: 'Kopyala',
+    label: t('shareStrategies.copy'),
     icon: 'Copy',
     color: '#6B7280',
     action: async (shareData, hooks, viewShotRef) => {
-      const textToCopy = `"${shareData.content}" - @${shareData.user_username || 'kullanıcı'}\nCINEBOOK'ta keşfet!`;
+      const textToCopy = t('shareStrategies.copyText', { content: shareData.content, username: shareData.user_username || 'kullanıcı' });
       await Clipboard.setStringAsync(textToCopy);
-      hooks.showToast('Alıntı panoya kopyalandı.');
+      hooks.showToast(t('shareStrategies.copySuccess'));
     }
   },
   {
     id: 'save',
-    label: 'Kaydet',
+    label: t('shareStrategies.save'),
     icon: 'DownloadSimple',
     color: '#374151',
     action: async (shareData, hooks, viewShotRef) => {
       const uri = await captureImage(viewShotRef);
-      if (!uri) return hooks.showToast('Görsel oluşturulamadı.');
+      if (!uri) return hooks.showToast(t('shareStrategies.imageError'));
 
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
-        return hooks.showToast('Galeri erişim izni reddedildi.');
+        return hooks.showToast(t('shareStrategies.galleryPermissionDenied'));
       }
 
       try {
         await MediaLibrary.saveToLibraryAsync(uri);
-        hooks.showToast('Görsel galeriye kaydedildi!');
+        hooks.showToast(t('shareStrategies.saveSuccess'));
       } catch (e) {
         console.error('Save error:', e);
-        hooks.showToast('Kaydetme sırasında hata oluştu.');
+        hooks.showToast(t('shareStrategies.saveError'));
       }
     }
   }

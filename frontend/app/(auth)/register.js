@@ -10,8 +10,10 @@ import AuthButton from '@/features/auth/components/AuthButton';
 import RememberMeCheckbox from '@/features/auth/components/RememberMeCheckbox';
 import PasswordValidator, { isPasswordValid } from '@/features/auth/components/PasswordValidator';
 import { registerStyles as styles } from '@/features/auth/styles/register.styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function RegisterScreen() {
+  const { t } = useLanguage();
   const {
     username,
     setUsername,
@@ -32,52 +34,52 @@ export default function RegisterScreen() {
       <AuthHeader 
         emoji="📚" 
         title="CineBook" 
-        subtitle="Topluluğa Katıl" 
+        subtitle={t('register.headerSubtitle')} 
       />
 
       <View className={styles.container}>
         <Text className={styles.title}>
-          Kayıt Ol
+          {t('register.title')}
         </Text>
 
         <AuthInput
-          label="Kullanıcı Adı"
+          label={t('register.usernameLabel')}
           value={username}
           onChangeText={setUsername}
-          placeholder="kullanici_adi"
+          placeholder={t('register.usernamePlaceholder')}
         />
 
         <AuthInput
-          label="E-posta"
+          label={t('register.emailLabel')}
           value={email}
           onChangeText={setEmail}
-          placeholder="ornek@email.com"
+          placeholder={t('register.emailPlaceholder')}
           keyboardType="email-address"
         />
 
         <View className={styles.passwordContainer}>
           <AuthInput
-            label="Şifre"
+            label={t('register.passwordLabel')}
             value={password}
             onChangeText={setPassword}
-            placeholder="••••••"
+            placeholder={t('register.passwordPlaceholder')}
             secure={true}
           />
           <PasswordValidator password={password} />
         </View>
 
         <AuthInput
-          label="Şifre Tekrar"
+          label={t('register.passwordConfirmLabel')}
           value={passwordConfirm}
           onChangeText={setPasswordConfirm}
-          placeholder="••••••"
+          placeholder={t('register.passwordConfirmPlaceholder')}
           secure={true}
         />
 
         <RememberMeCheckbox checked={rememberMe} onChange={setRememberMe} />
 
         <AuthButton
-          title="Hesap Oluştur"
+          title={t('register.button.title')}
           onPress={handleRegister}
           gradientColors={GRADIENTS.secondary}
           loading={loading}
@@ -86,7 +88,7 @@ export default function RegisterScreen() {
 
         <TouchableOpacity className={styles.loginLinkContainer} onPress={() => router.back()}>
           <Text className={styles.loginLinkText}>
-            Zaten hesabın var mı? <Text className={styles.loginLinkBold}>Giriş Yap</Text>
+            {t('register.haveAccount')} <Text className={styles.loginLinkBold}>{t('register.loginLink')}</Text>
           </Text>
         </TouchableOpacity>
       </View>

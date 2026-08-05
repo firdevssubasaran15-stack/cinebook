@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Icon from '@/features/icon/components/Icon';
 import { useTheme } from '@/context/ThemeContext';
 import { detailStyles as styles } from '@/features/content/styles/detail.styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function ContentCover({
   isEditing,
@@ -16,6 +17,7 @@ export default function ContentCover({
   onPickImage
 }) {
   const { colors: COLORS, isDark } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <View className={styles.coverContainer}>
@@ -49,7 +51,7 @@ export default function ContentCover({
             <Icon name="Camera" size={16} color="#fff" />
           )}
           <Text className={styles.changeCoverText}>
-            {isPickingImage ? 'Seçiliyor...' : 'Kapak Değiştir'}
+            {isPickingImage ? t('contentEdit.selecting') : t('contentEdit.changeCover')}
           </Text>
         </TouchableOpacity>
       )}
@@ -57,7 +59,7 @@ export default function ContentCover({
       {saving && isEditing && (
         <View className="absolute inset-0 bg-black/50 justify-center items-center z-50">
           <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text className="text-white mt-2 font-bold">Kapak Yükleniyor...</Text>
+          <Text className="text-white mt-2 font-bold">{t('contentEdit.uploadingCover')}</Text>
         </View>
       )}
 

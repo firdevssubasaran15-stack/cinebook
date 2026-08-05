@@ -5,25 +5,27 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { GRADIENTS } from '@/constants/colors';
 import { useBroadcast } from '@/features/admin/hooks/useBroadcast';
 import { styles } from './styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function BroadcastManager() {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
   const { message, setMessage, sending, handleBroadcast } = useBroadcast();
 
   return (
     <View className={styles.container}>
-      <Text className={styles.title}>📢 Genel Duyuru Gönder</Text>
+      <Text className={styles.title}>{t('admin.broadcastTitle')}</Text>
       <Text className={styles.subtitle}>
-        Buraya yazacağınız mesaj sistemde bildirimleri açık olan tüm kullanıcılara gönderilecektir.
+        {t('admin.broadcastSubtitle')}
       </Text>
       
       <View className={styles.inputLabelContainer}>
-        <Text className={styles.inputLabel}>Duyuru Mesajı</Text>
+        <Text className={styles.inputLabel}>{t('admin.broadcastLabel')}</Text>
         <TextInput
           className={styles.textInput}
           value={message}
           onChangeText={setMessage}
-          placeholder="Tüm kullanıcılara gidecek mesaj..."
+          placeholder={t('admin.broadcastPlaceholder')}
           placeholderTextColor={COLORS.textMuted}
           multiline
           textAlignVertical="top"
@@ -41,7 +43,7 @@ export default function BroadcastManager() {
           start={{ x: 0, y: 0 }} 
           end={{ x: 1, y: 0 }}
         >
-          {sending ? <ActivityIndicator color="#fff" /> : <Text className={styles.buttonText}>Duyuruyu Gönder</Text>}
+          {sending ? <ActivityIndicator color="#fff" /> : <Text className={styles.buttonText}>{t('admin.broadcastBtn')}</Text>}
         </LinearGradient>
       </TouchableOpacity>
     </View>

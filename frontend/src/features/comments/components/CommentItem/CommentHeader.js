@@ -4,8 +4,11 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { API_BASE_URL } from '@/constants/api';
 
+import { useLanguage } from '@/hooks/useLanguage';
+
 export default function CommentHeader({ comment }) {
-  const date = new Date(comment.created_at).toLocaleDateString('tr-TR');
+  const { language } = useLanguage();
+  const date = new Date(comment.created_at).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US');
 
   return (
     <>

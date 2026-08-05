@@ -8,10 +8,12 @@ import { useCommentsSection } from './useCommentsSection';
 import CommentInputForm from './components/CommentInputForm';
 import CommentList from './components/CommentList';
 import { CommentsSectionStyles as styles } from './styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function CommentsSection({ contentId, onShare }) {
   const { user, isAdmin, privileges } = useAuth();
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
   
   const isModerator = isAdmin || privileges?.can_moderate_content === 1;
   const canComment = privileges?.can_comment !== 0;
@@ -23,7 +25,7 @@ export default function CommentsSection({ contentId, onShare }) {
     <View className={styles.container}>
       <View className={styles.header}>
         <Icon name="ChatCircle" size={20} color={COLORS.primary} weight="fill" />
-        <Text className={styles.title}>Yorumlar</Text>
+        <Text className={styles.title}>{t('commentsSection.title')}</Text>
       </View>
 
       {canComment && <CommentInputForm state={state} actions={actions} />}

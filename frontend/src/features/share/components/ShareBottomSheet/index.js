@@ -3,14 +3,16 @@ import { View, Text, Modal, Animated, TouchableWithoutFeedback, TouchableOpacity
 import { useTheme } from '@/context/ThemeContext';
 import Icon from '@/features/icon/components/Icon';
 import SharePreviewCard from '../SharePreviewCard';
-import { SHARE_STRATEGIES } from '../../constants/shareStrategies';
+import { getShareStrategies } from '../../constants/shareStrategies';
 import { styles } from './styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 /**
  * Modern slide-up bottom sheet for sharing.
  */
 export default function ShareBottomSheet({ visible, onClose, shareData, onShare }) {
   const { colors: COLORS, isDark } = useTheme();
+  const { t } = useLanguage();
   const slideAnim = useRef(new Animated.Value(300)).current; // Start below screen
   const viewShotRef = useRef(null);
 
@@ -53,14 +55,14 @@ export default function ShareBottomSheet({ visible, onClose, shareData, onShare 
             >
               <View style={[styles.dragHandle, { backgroundColor: COLORS.border }]} />
               
-              <Text style={[styles.sheetTitle, { color: COLORS.textPrimary }]}>Paylaş</Text>
+              <Text style={[styles.sheetTitle, { color: COLORS.textPrimary }]}>{t('shareStrategies.share')}</Text>
 
               {/* Preview Card */}
               <SharePreviewCard ref={viewShotRef} shareData={shareData} />
 
               {/* Share Options (Strategy Pattern) */}
               <View style={styles.optionsContainer}>
-                {SHARE_STRATEGIES.map((strategy) => (
+                {getShareStrategies(t).map((strategy) => (
                   <TouchableOpacity 
                     key={strategy.id} 
                     style={styles.optionButton}

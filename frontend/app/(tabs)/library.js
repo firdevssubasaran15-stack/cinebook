@@ -5,13 +5,15 @@ import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import Icon from '@/features/icon/components/Icon';
 import ContentCard from '@/features/content/components/ContentCard';
-import { LIBRARY_TABS } from '@/constants/library';
+import { getLibraryTabs } from '@/constants/library';
 import { useLibrary } from '@/features/library/hooks/useLibrary';
 import { libraryStyles as styles } from '@/features/library/styles/library.styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function LibraryScreen() {
   const { user } = useAuth();
   const { colors: COLORS, isDark } = useTheme();
+  const { t } = useLanguage();
   
   const {
     loading,
@@ -32,7 +34,7 @@ export default function LibraryScreen() {
     return (
       <View className={styles.unauthenticatedContainer}>
         <Icon name="LockKey" size={48} color={COLORS.textMuted} />
-        <Text className={styles.unauthenticatedText}>Kitaplığınızı görmek için giriş yapmalısınız.</Text>
+        <Text className={styles.unauthenticatedText}>{t('library.loginToView')}</Text>
       </View>
     );
   }
@@ -40,10 +42,10 @@ export default function LibraryScreen() {
   return (
     <View className={styles.mainContainer}>
       <View className={styles.headerContainer}>
-        <Text className={styles.headerTitle}>📚 Kitaplığım</Text>
+        <Text className={styles.headerTitle}>{t('library.myLibraryTitle')}</Text>
         
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
-          {LIBRARY_TABS.map(tab => {
+          {getLibraryTabs(t).map(tab => {
             const isActive = activeTab === tab.id;
             return (
               <TouchableOpacity
@@ -82,15 +84,15 @@ export default function LibraryScreen() {
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
           {/* Listelerim Bölümü */}
           <View className={styles.listsHeaderContainer}>
-            <Text className={styles.listsHeaderTitle}>Listelerim</Text>
+            <Text className={styles.listsHeaderTitle}>{t('library.myLists')}</Text>
             <View className={styles.createListButtonsContainer}>
               <TouchableOpacity onPress={() => { setNewListType('watching'); setShowCreateModal(true); }} className={styles.createListButton}>
                 <Icon name="Plus" size={14} color={COLORS.primary} />
-                <Text className={styles.createListButtonText}>İzleme</Text>
+                <Text className={styles.createListButtonText}>{t('library.watchListBtn')}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => { setNewListType('reading'); setShowCreateModal(true); }} className={styles.createListButton}>
                 <Icon name="Plus" size={14} color={COLORS.primary} />
-                <Text className={styles.createListButtonText}>Okuma</Text>
+                <Text className={styles.createListButtonText}>{t('library.readListBtn')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -107,18 +109,18 @@ export default function LibraryScreen() {
                     <Icon name={list.type === 'watching' ? 'MonitorPlay' : 'BookOpen'} size={24} color={list.type === 'watching' ? '#E91E63' : '#2196F3'} weight="fill" />
                   </View>
                   <Text className={styles.sharedListTitle} numberOfLines={1}>{list.name}</Text>
-                  <Text className={styles.sharedListSubtitle}>{list.member_count} Üye • {list.content_count} İçerik</Text>
+                  <Text className={styles.sharedListSubtitle}>{t('library.memberCount', { count: list.member_count })} • {t('library.contentCount', { count: list.content_count })}</Text>
                 </TouchableOpacity>
               ))}
               <View className="w-8" />
             </ScrollView>
           )}
 
-          <Text className={styles.personalLibraryTitle}>Kişisel Kitaplığım</Text>
+          <Text className={styles.personalLibraryTitle}>{t('library.personalLibrary')}</Text>
           {filteredItems.length === 0 ? (
             <View className={styles.emptyLibraryContainer}>
               <Icon name="FolderOpen" size={48} color={COLORS.textMuted} weight="light" />
-              <Text className={styles.emptyLibraryText}>Bu listede henüz içerik yok.</Text>
+              <Text className={styles.emptyLibraryText}>{t('library.emptyLibrary')}</Text>
             </View>
           ) : (
             <View className={styles.gridContainer}>
@@ -136,11 +138,11 @@ export default function LibraryScreen() {
       {showCreateModal && (
         <View className={styles.modalOverlay}>
           <View className={styles.modalContainer}>
-            <Text className={styles.modalTitle}>Yeni {newListType === 'watching' ? 'İzleme' : 'Okuma'} Listesi</Text>
+            <Text className={styles.modalTitle}>{newListType === 'watching' ? t('library.newWatchList') : t('library.newReadList')}</Text>
             <View className={styles.modalInputContainer}>
               <TextInput
                 className={styles.modalInput}
-                placeholder="Liste Adı"
+                placeholder={t('library.listNamePlaceholder')}
                 placeholderTextColor={COLORS.textMuted}
                 value={newListName}
                 onChangeText={setNewListName}
@@ -149,10 +151,10 @@ export default function LibraryScreen() {
             </View>
             <View className={styles.modalButtonsContainer}>
               <TouchableOpacity onPress={() => setShowCreateModal(false)} className={styles.modalCancelButton}>
-                <Text className={styles.modalCancelText}>İptal</Text>
+                <Text className={styles.modalCancelText}>{t('contentEdit.cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={handleCreateList} className={styles.modalCreateButton}>
-                <Text className={styles.modalCreateText}>Oluştur</Text>
+                <Text className={styles.modalCreateText}>{t('library.createBtn')}</Text>
               </TouchableOpacity>
             </View>
           </View>

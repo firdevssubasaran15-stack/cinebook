@@ -8,11 +8,13 @@ import ContentCard from '@/features/content/components/ContentCard';
 import { API_BASE_URL } from '@/constants/api';
 import { useSharedListDetail } from '@/features/shared-lists/hooks/useSharedListDetail';
 import { sharedListDetailStyles as styles } from '@/features/shared-lists/styles/sharedListDetail.styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function SharedListDetailScreen() {
   const { id } = useLocalSearchParams();
   const { user } = useAuth();
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
 
   const {
     list,
@@ -71,12 +73,12 @@ export default function SharedListDetailScreen() {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View className={styles.topActionsRow}>
           <Text className={styles.listTypeSubtitle}>
-            {list.type === 'watching' ? '🎬 İzleme Listesi' : '📚 Okuma Listesi'}
+            {list.type === 'watching' ? t('sharedList.watchingList') : t('sharedList.readingList')}
           </Text>
           {isOwner && (
             <TouchableOpacity onPress={() => setShowInviteModal(true)} className={styles.inviteButton}>
               <Icon name="UserPlus" size={16} color="#fff" />
-              <Text className={styles.inviteButtonText}>Davet Et</Text>
+              <Text className={styles.inviteButtonText}>{t('sharedList.invite')}</Text>
             </TouchableOpacity>
           )}
           {!isOwner && list.is_public === 1 && (
@@ -86,7 +88,7 @@ export default function SharedListDetailScreen() {
                 ) : (
                   <>
                     <Icon name={list.is_saved_by_user ? "Check" : "BookmarkSimple"} size={16} color={list.is_saved_by_user ? COLORS.primary : '#fff'} />
-                    <Text className={`${styles.saveButtonTextBase} ${list.is_saved_by_user ? styles.saveButtonTextSaved : styles.saveButtonTextNotSaved}`}>{list.is_saved_by_user ? 'Kaydedildi' : 'Kaydet'}</Text>
+                    <Text className={`${styles.saveButtonTextBase} ${list.is_saved_by_user ? styles.saveButtonTextSaved : styles.saveButtonTextNotSaved}`}>{list.is_saved_by_user ? t('sharedList.saved') : t('sharedList.save')}</Text>
                   </>
                 )}
              </TouchableOpacity>
@@ -94,7 +96,7 @@ export default function SharedListDetailScreen() {
         </View>
 
         {/* Üyeler */}
-        <Text className={styles.sectionTitle}>Üyeler ({list.members?.length || 0})</Text>
+        <Text className={styles.sectionTitle}>{t('sharedList.members')} ({list.members?.length || 0})</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className={styles.membersScroll}>
           {list.members?.map(m => (
             <View key={m.id} className={styles.memberItem}>
@@ -107,7 +109,7 @@ export default function SharedListDetailScreen() {
               </View>
               <Text className={styles.memberUsername} numberOfLines={1}>@{m.username}</Text>
               <Text className={`${styles.memberRoleBase} ${m.status === 'owner' ? styles.memberRoleOwner : styles.memberRoleOther}`}>
-                {m.status === 'owner' ? 'Kurucu' : m.status === 'pending' ? 'Bekliyor' : 'Üye'}
+                {m.status === 'owner' ? t('sharedList.founder') : m.status === 'pending' ? t('sharedList.pending') : t('sharedList.member')}
               </Text>
             </View>
           ))}
@@ -115,26 +117,26 @@ export default function SharedListDetailScreen() {
 
         {/* İçerikler */}
         <View className={styles.contentsHeaderRow}>
-          <Text className={styles.contentsTitle}>İçerikler ({list.contents?.length || 0})</Text>
+          <Text className={styles.contentsTitle}>{t('sharedList.contents')} ({list.contents?.length || 0})</Text>
           {canAddContent && (
             <TouchableOpacity onPress={() => setShowContentModal(true)} className={styles.addContentButton}>
               <Icon name="Plus" size={14} color={COLORS.primary} />
-              <Text className={styles.addContentButtonText}>İçerik Ekle</Text>
+              <Text className={styles.addContentButtonText}>{t('sharedList.addContent')}</Text>
             </TouchableOpacity>
           )}
         </View>
         {list.contents?.length === 0 ? (
           <View className={styles.emptyContentsContainer}>
             <Icon name="FolderOpen" size={48} color={COLORS.textMuted} weight="light" />
-            <Text className={styles.emptyContentsTitle}>Bu listede henüz içerik yok.</Text>
-            <Text className={styles.emptyContentsSubtitle}>İçerik sayfalarındaki "Listeye Ekle" butonunu kullanarak buraya ekleme yapabilirsiniz.</Text>
+            <Text className={styles.emptyContentsTitle}>{t('sharedList.emptyContentsTitle')}</Text>
+            <Text className={styles.emptyContentsSubtitle}>{t('sharedList.emptyContentsSubtitle')}</Text>
           </View>
         ) : (
           <View className={styles.contentsGrid}>
             {list.contents?.map(content => (
               <View key={content.id} className={styles.contentItem}>
                 <ContentCard item={content} onPress={() => router.push(`/detail/${content.id}`)} />
-                <Text className={styles.contentAddedBy}>Ekleyen: @{content.added_by_username}</Text>
+                <Text className={styles.contentAddedBy}>{t('sharedList.addedBy')}: @{content.added_by_username}</Text>
               </View>
             ))}
           </View>
@@ -146,13 +148,13 @@ export default function SharedListDetailScreen() {
         <View className={styles.modalOverlay}>
           <View className={styles.modalContainer}>
             <View className={styles.modalHeaderRow}>
-              <Text className={styles.modalTitle}>Kullanıcı Davet Et</Text>
+              <Text className={styles.modalTitle}>{t('sharedList.inviteUserTitle')}</Text>
               <TouchableOpacity onPress={() => setShowInviteModal(false)}><Icon name="X" size={24} color={COLORS.textSecondary} /></TouchableOpacity>
             </View>
             <View className={styles.modalInputContainer}>
               <TextInput
                 className={styles.modalInput}
-                placeholder="Kullanıcı adı ara..."
+                placeholder={t('sharedList.searchUserPlaceholder')}
                 placeholderTextColor={COLORS.textMuted}
                 value={searchQuery}
                 onChangeText={handleSearchUsers}
@@ -167,12 +169,12 @@ export default function SharedListDetailScreen() {
                 >
                   <Text className={styles.searchResultText}>@{u.username}</Text>
                   <TouchableOpacity onPress={() => handleInviteUser(u.id)} className={styles.searchResultActionBtn}>
-                    <Text className={styles.searchResultActionText}>Davet Et</Text>
+                    <Text className={styles.searchResultActionText}>{t('sharedList.invite')}</Text>
                   </TouchableOpacity>
                 </TouchableOpacity>
               ))}
               {searchResults.length === 0 && searchQuery.length >= 2 && !inviteLoading && (
-                <Text className={styles.emptySearchText}>Kullanıcı bulunamadı.</Text>
+                <Text className={styles.emptySearchText}>{t('sharedList.userNotFound')}</Text>
               )}
             </ScrollView>
           </View>
@@ -184,13 +186,13 @@ export default function SharedListDetailScreen() {
         <View className={styles.modalOverlay}>
           <View className={styles.modalContainer}>
             <View className={styles.modalHeaderRow}>
-              <Text className={styles.modalTitle}>İçerik Ara & Ekle</Text>
+              <Text className={styles.modalTitle}>{t('sharedList.searchAndAddContent')}</Text>
               <TouchableOpacity onPress={() => setShowContentModal(false)}><Icon name="X" size={24} color={COLORS.textSecondary} /></TouchableOpacity>
             </View>
             <View className={styles.modalInputContainer}>
               <TextInput
                 className={styles.modalInput}
-                placeholder={list.type === 'watching' ? "Film veya dizi ara..." : "Kitap ara..."}
+                placeholder={list.type === 'watching' ? t('sharedList.searchMovieSeriesPlaceholder') : t('sharedList.searchBookPlaceholder')}
                 placeholderTextColor={COLORS.textMuted}
                 value={contentSearchQuery}
                 onChangeText={handleSearchContents}
@@ -208,12 +210,12 @@ export default function SharedListDetailScreen() {
                     <Text className={styles.searchResultSubtitle} numberOfLines={1}>{c.director_author}</Text>
                   </View>
                   <TouchableOpacity onPress={() => handleAddContent(c.id)} className={styles.searchResultActionBtn}>
-                    <Text className={styles.searchResultActionText}>Ekle</Text>
+                    <Text className={styles.searchResultActionText}>{t('sharedList.add')}</Text>
                   </TouchableOpacity>
                 </TouchableOpacity>
               ))}
               {contentSearchResults.length === 0 && contentSearchQuery.length >= 2 && !contentSearchLoading && (
-                <Text className={styles.emptySearchText}>İçerik bulunamadı.</Text>
+                <Text className={styles.emptySearchText}>{t('sharedList.contentNotFound')}</Text>
               )}
             </ScrollView>
           </View>

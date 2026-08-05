@@ -3,9 +3,11 @@ import { View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-nati
 import Icon from '@/features/icon/components/Icon';
 import { useTheme } from '@/context/ThemeContext';
 import { CommentInputStyles as styles } from '../../styles';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function CommentInputForm({ state, actions }) {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <View className={styles.container}>
@@ -14,7 +16,7 @@ export default function CommentInputForm({ state, actions }) {
           className={styles.quoteInput}
           value={state.newQuote}
           onChangeText={actions.setNewQuote}
-          placeholder="Filmden/Kitaptan alıntı (İsteğe bağlı)..."
+          placeholder={t('commentsSection.quotePlaceholder')}
           placeholderTextColor={`${COLORS.textMuted}90`}
           multiline
         />
@@ -22,7 +24,7 @@ export default function CommentInputForm({ state, actions }) {
           className={styles.textInput}
           value={state.newComment}
           onChangeText={actions.setNewComment}
-          placeholder="Yorumunuzu yazın..."
+          placeholder={t('commentsSection.commentPlaceholder')}
           placeholderTextColor={COLORS.textMuted}
           multiline
         />
