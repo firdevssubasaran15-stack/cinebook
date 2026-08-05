@@ -1,7 +1,7 @@
 import apiClient from '@/api/apiClient';
 import { ENDPOINTS, API_BASE_URL } from '@/constants/api';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storageService } from '@/services/storage.service';
 
 export const usersApi = {
   getProfile: (userId) => apiClient.get(ENDPOINTS.USER_PROFILE(userId)),
@@ -11,7 +11,7 @@ export const usersApi = {
   getFollowers: (userId) => apiClient.get(ENDPOINTS.USER_FOLLOWERS(userId)),
   getFollowing: (userId) => apiClient.get(ENDPOINTS.USER_FOLLOWING(userId)),
   updateProfileImage: async (formData) => {
-    const token = await AsyncStorage.getItem('cinebook_token');
+    const token = await storageService.getItem('cinebook_token');
     const response = await fetch(`${API_BASE_URL}/api/users/profile-image`, {
       method: 'PUT',
       headers: {

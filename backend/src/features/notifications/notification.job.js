@@ -1,4 +1,4 @@
-const { dbQuery, dbGet } = require('@/database/db');
+const notificationJobRepository = require('./notification-job.repository');
 const notificationsService = require('./notifications.service');
 
 const INTERVAL_MS = 60 * 1000; // Check every minute
@@ -11,8 +11,7 @@ class NotificationJob {
 
   processSmartQuotes() {
     try {
-      // 1. Tüm bildirimleri açık olan kullanıcıları çek
-      const users = dbQuery("SELECT id, notification_interval FROM users WHERE notifications_enabled = 1");
+      const users = notificationJobRepository.getUsersWithNotificationsEnabled();
 
       for (const user of users) {
         this.processUser(user);
@@ -23,11 +22,7 @@ class NotificationJob {
   }
 
   processUser(user) {
-    // interval süresi dolmuş mu kontrol et
-    const lastNotif = dbGet(
-      "SELECT created_at FROM notifications WHERE user_id = ? AND type = 'system_quote' ORDER BY created_at DESC LIMIT 1",
-      [user.id]
-    );
+    const lastNotif = notificationJobRepository.getLastSystemQuoteNotification(user.id);
 
     if (lastNotif) {
       // created_at is likely 'YYYY-MM-DD HH:MM:SS', SQLite datetime('now') returns UTC
@@ -47,37 +42,11 @@ class NotificationJob {
       if (diff < requiredDiff) return; // Henüz zamanı gelmemiş
     }
 
-    // 2. Kullanıcının son 7 gündeki en yoğun duygusunu bul
-    const topEmotion = dbGet(`
-      SELECT t.tag, COUNT(*) as count
-      FROM feelings f
-      JOIN feeling_tags t ON f.id = t.feeling_id
-      WHERE f.user_id = ? AND f.created_at >= datetime('now', '-7 days')
-      GROUP BY t.tag
-      ORDER BY count DESC, f.created_at DESC
-      LIMIT 1
-    `, [user.id]);
+    const topEmotion = notificationJobRepository.getTopEmotionLast7Days(user.id);
 
     if (!topEmotion) return; // Duygu yoksa alıntı tavsiyesi atma
 
-    // 3. Kullanıcının yorum yapmadığı ve kütüphanesine eklemediği içerikler arasından, 
-    // bu duygu etiketine sahip içerikleri ve onlara yapılan alıntılı yorumları bul.
-    const suggestedQuote = dbGet(`
-      SELECT com.id, com.quote, u.username, c.title, c.id as content_id
-      FROM comments com
-      JOIN users u ON com.user_id = u.id
-      JOIN content c ON com.content_id = c.id
-      JOIN feelings f ON f.content_id = c.id
-      JOIN feeling_tags ft ON ft.feeling_id = f.id
-      WHERE com.quote IS NOT NULL 
-        AND com.quote != ''
-        AND com.user_id != ?
-        AND ft.tag = ?
-        AND c.id NOT IN (SELECT content_id FROM comments WHERE user_id = ?)
-        AND c.id NOT IN (SELECT content_id FROM library WHERE user_id = ?)
-      ORDER BY RANDOM()
-      LIMIT 1
-    `, [user.id, topEmotion.tag, user.id, user.id]);
+    const suggestedQuote = notificationJobRepository.getSuggestedQuote(user.id, topEmotion.tag);
 
     if (suggestedQuote) {
       // Duygu etiketlerini kullanıcı dostu hale getir

@@ -1,7 +1,5 @@
 const contentService = require('@/features/content/content.service');
 const { successResponse, errorResponse } = require('@/shared/utils/response.helper');
-const sizeOf = require('image-size');
-const fs = require('fs');
 
 class ContentController {
   getRecommendations(req, res) {
@@ -27,6 +25,7 @@ class ContentController {
       return errorResponse(res, err.message);
     }
   }
+
   getLatest(req, res) {
     try {
       const data = contentService.getLatestByType();
@@ -62,17 +61,8 @@ class ContentController {
       let cover_image = null;
       
       if (req.file) {
-        try {
-          const dimensions = sizeOf(req.file.path);
-          if (dimensions.width !== 1000 || dimensions.height !== 1500) {
-            fs.unlinkSync(req.file.path);
-            return errorResponse(res, `Kapak resmi boyutları 1000x1500 olmalıdır. (Yüklenen: ${dimensions.width}x${dimensions.height})`, 400);
-          }
-          cover_image = `/uploads/${req.file.filename}`;
-        } catch (sizeErr) {
-          if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-          return errorResponse(res, 'Resim boyutları okunamadı veya dosya bozuk.', 400);
-        }
+        // Validation is now handled by image-validator.middleware.js
+        cover_image = `/uploads/${req.file.filename}`;
       }
 
       const data = contentService.create({ type, title, director_author, summary, cover_image });
@@ -88,17 +78,8 @@ class ContentController {
       let cover_image = undefined;
       
       if (req.file) {
-        try {
-          const dimensions = sizeOf(req.file.path);
-          if (dimensions.width !== 1000 || dimensions.height !== 1500) {
-            fs.unlinkSync(req.file.path);
-            return errorResponse(res, `Kapak resmi boyutları 1000x1500 olmalıdır. (Yüklenen: ${dimensions.width}x${dimensions.height})`, 400);
-          }
-          cover_image = `/uploads/${req.file.filename}`;
-        } catch (sizeErr) {
-          if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
-          return errorResponse(res, 'Resim boyutları okunamadı veya dosya bozuk.', 400);
-        }
+        // Validation is now handled by image-validator.middleware.js
+        cover_image = `/uploads/${req.file.filename}`;
       }
 
       const data = contentService.update(parseInt(req.params.id), { title, director_author, summary, cover_image });

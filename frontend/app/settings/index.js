@@ -1,80 +1,40 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert, TextInput, Switch } from 'react-native';
-import { Image } from 'expo-image';
+import React from 'react';
+import { View, Text, TouchableOpacity, Switch } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import Icon from '@/features/icon/components/Icon';
-import { API_BASE_URL } from '@/constants/api';
-import { usersApi } from '@/api/endpoints/users.api';
+import { useSettings } from '@/features/settings/hooks/useSettings';
+import { getSettingsStyles } from '@/features/settings/styles/settings.styles';
 
 export default function SettingsScreen() {
   const { user, logout, updateUser } = useAuth();
   const { colors: COLORS, toggleTheme, isDark } = useTheme();
-  const [loading, setLoading] = useState(false);
+  
+  const {
+    handleToggleNotifications,
+    handleChangeInterval,
+    handleLogout
+  } = useSettings(user, logout, updateUser);
 
-  const handleToggleNotifications = async (value) => {
-    try {
-      const interval = user?.notification_interval || 'hourly';
-      const res = await usersApi.updateNotificationSettings(value, interval);
-      updateUser(res.data.data);
-    } catch (error) {
-      Alert.alert('Hata', 'Bildirim ayarı güncellenemedi.');
-    }
-  };
-
-  const handleChangeInterval = async (interval) => {
-    try {
-      const isEnabled = user?.notifications_enabled !== 0;
-      const res = await usersApi.updateNotificationSettings(isEnabled, interval);
-      updateUser(res.data.data);
-    } catch (error) {
-      Alert.alert('Hata', 'Bildirim aralığı güncellenemedi.');
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      router.replace('/(auth)/login');
-    } catch (error) {
-      Alert.alert('Hata', 'Çıkış yapılamadı.');
-    }
-  };
+  const styles = getSettingsStyles(COLORS, user);
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingTop: 64,
-        paddingBottom: 20,
-        paddingHorizontal: 24,
-        borderBottomWidth: 1,
-        backgroundColor: COLORS.surfaceElevated,
-        borderBottomColor: COLORS.border,
-      }}>
-        <TouchableOpacity style={{ padding: 6 }} onPress={() => router.back()}>
+    <View style={styles.mainContainer}>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Icon name="ArrowLeft" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', color: COLORS.textPrimary }}>Ayarlar</Text>
-        <View style={{ width: 36 }} />
+        <Text style={styles.headerTitle}>Ayarlar</Text>
+        <View style={styles.headerSpacer} />
       </View>
 
-      <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
+      <View style={styles.contentContainer}>
         {/* Bildirimler */}
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingVertical: 18,
-          borderBottomWidth: user?.notifications_enabled !== 0 ? 0 : 1,
-          borderBottomColor: COLORS.border,
-        }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={styles.notificationToggleRow}>
+          <View style={styles.settingLabelRow}>
             <Icon name="Bell" size={22} color={COLORS.textSecondary} />
-            <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 16, color: COLORS.textPrimary }}>
+            <Text style={styles.settingLabel}>
               Bildirimler
             </Text>
           </View>
@@ -87,9 +47,9 @@ export default function SettingsScreen() {
         </View>
 
         {user?.notifications_enabled !== 0 && (
-          <View style={{ paddingBottom: 18, borderBottomWidth: 1, borderBottomColor: COLORS.border }}>
-            <Text style={{ fontSize: 14, fontWeight: '600', marginBottom: 12, color: COLORS.textSecondary }}>Bildirim Alma Aralığı</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8 }}>
+          <View style={styles.intervalSection}>
+            <Text style={styles.intervalTitle}>Bildirim Alma Aralığı</Text>
+            <View style={styles.intervalOptionsRow}>
               {[
                 { label: 'Saat', value: 'hourly' },
                 { label: 'Gün', value: 'daily' },
@@ -100,22 +60,10 @@ export default function SettingsScreen() {
                 return (
                   <TouchableOpacity
                     key={opt.value}
-                    style={{
-                      flex: 1,
-                      paddingVertical: 10,
-                      borderRadius: 12,
-                      alignItems: 'center',
-                      borderWidth: 1,
-                      backgroundColor: isSelected ? COLORS.primary : 'transparent',
-                      borderColor: isSelected ? COLORS.primary : COLORS.border,
-                    }}
+                    style={styles.intervalOption(isSelected)}
                     onPress={() => handleChangeInterval(opt.value)}
                   >
-                    <Text style={{
-                      fontSize: 13,
-                      fontWeight: '600',
-                      color: isSelected ? '#fff' : COLORS.textPrimary,
-                    }}>{opt.label}</Text>
+                    <Text style={styles.intervalOptionText(isSelected)}>{opt.label}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -125,34 +73,22 @@ export default function SettingsScreen() {
 
         {/* Tema Değiştir */}
         <TouchableOpacity
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingVertical: 18,
-            borderBottomWidth: 1,
-            borderBottomColor: COLORS.border,
-          }}
+          style={styles.actionRow}
           onPress={toggleTheme}
         >
           <Icon name={isDark ? "Sun" : "Moon"} size={22} color={COLORS.textSecondary} />
-          <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 16, color: COLORS.textPrimary }}>
+          <Text style={styles.actionText}>
             {isDark ? "Açık Temaya Geç" : "Koyu Temaya Geç"}
           </Text>
         </TouchableOpacity>
 
         {/* Çıkış Yap */}
         <TouchableOpacity
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingVertical: 18,
-            borderBottomWidth: 1,
-            borderBottomColor: COLORS.border,
-          }}
+          style={styles.actionRow}
           onPress={handleLogout}
         >
           <Icon name="SignOut" size={22} color={COLORS.error} />
-          <Text style={{ fontSize: 16, fontWeight: '500', marginLeft: 16, color: COLORS.error }}>Çıkış Yap</Text>
+          <Text style={styles.logoutText}>Çıkış Yap</Text>
         </TouchableOpacity>
       </View>
     </View>

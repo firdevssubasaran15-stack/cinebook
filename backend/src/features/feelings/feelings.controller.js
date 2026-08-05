@@ -35,6 +35,7 @@ class FeelingsController {
       );
       return successResponse(res, data, '"Bana Hissettirdikleri" paylaşıldı.', 201);
     } catch (err) {
+      console.error('Feelings create error:', err);
       return errorResponse(res, err.message, 400);
     }
   }

@@ -5,6 +5,7 @@ const path = require('path');
 const contentController = require('@/features/content/content.controller');
 const { authenticateToken } = require('@/shared/middleware/auth.middleware');
 const { requireAdmin } = require('@/shared/middleware/admin.middleware');
+const { validateImageDimensions } = require('@/shared/middlewares/image-validator.middleware');
 
 // Multer storage konfigürasyonu
 const storage = multer.diskStorage({
@@ -46,12 +47,12 @@ router.get('/type/:type', authenticateToken, (req, res) => contentController.get
 router.get('/:id', authenticateToken, (req, res) => contentController.getById(req, res));
 
 // POST /api/content — Sadece admin
-router.post('/', authenticateToken, requireAdmin, upload.single('cover_image'), (req, res) =>
+router.post('/', authenticateToken, requireAdmin, upload.single('cover_image'), validateImageDimensions(1000, 1500), (req, res) =>
   contentController.create(req, res)
 );
 
 // PUT /api/content/:id — Sadece admin
-router.put('/:id', authenticateToken, requireAdmin, upload.single('cover_image'), (req, res) =>
+router.put('/:id', authenticateToken, requireAdmin, upload.single('cover_image'), validateImageDimensions(1000, 1500), (req, res) =>
   contentController.update(req, res)
 );
 

@@ -116,6 +116,7 @@ class UsersController {
       const tags = usersService.getTopEmotions(currentUserId, 5);
       return successResponse(res, tags);
     } catch (err) {
+      console.error('getTopEmotions error:', err);
       return errorResponse(res, err.message, 400);
     }
   }

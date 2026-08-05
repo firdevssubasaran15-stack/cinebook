@@ -14,6 +14,7 @@ export default function CommentActions({
   onReply, 
   onToggleLike, 
   onToggleDislike,
+  onShare,
   actions 
 }) {
   const { colors: COLORS } = useTheme();
@@ -65,6 +66,11 @@ export default function CommentActions({
           <Text style={{ fontSize: 12, fontWeight: '600', color: comment.is_disliked_by_user ? COLORS.primary : COLORS.textMuted }}>
             {comment.dislike_count || 0}
           </Text>
+        </TouchableOpacity>
+      )}
+      {onShare && (
+        <TouchableOpacity onPress={() => onShare(comment)} className="p-1.5 rounded-full items-center justify-center bg-light-surface dark:bg-dark-surface/50">
+          <Icon name="PaperPlaneRight" size={16} color={COLORS.textSecondary} weight="bold" />
         </TouchableOpacity>
       )}
     </View>

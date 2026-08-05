@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { dbGet, dbRun } = require('@/database/db');
+const authRepository = require('./auth.repository');
 
 class AuthService {
   register(username, email, password) {
@@ -21,30 +21,23 @@ class AuthService {
       throw new Error('Şifre en az 1 özel karakter içermelidir.');
     }
 
-    const existing = dbGet('SELECT id FROM users WHERE username = ? OR email = ?', [username, email]);
+    const existing = authRepository.findUserByUsernameOrEmail(username, email);
     if (existing) {
       throw new Error('Bu kullanıcı adı veya e-posta zaten kullanılıyor.');
     }
 
     const passwordHash = bcrypt.hashSync(password, 12);
-    const result = dbRun(
-      'INSERT INTO users (username, email, password_hash, is_admin) VALUES (?, ?, ?, 0)',
-      [username, email, passwordHash]
-    );
+    const result = authRepository.insertUser(username, email, passwordHash);
 
-    dbRun(
-      `INSERT INTO user_privileges (user_id, can_comment, can_post_feelings, can_view_movies, can_view_series, can_view_books, can_view_admin_panel, can_moderate_content)
-       VALUES (?, 1, 1, 1, 1, 1, 0, 0)`,
-      [result.lastInsertRowid]
-    );
+    authRepository.insertUserPrivileges(result.lastInsertRowid);
 
-    const user = dbGet('SELECT id, username, email, is_admin, theme_preference, profile_image, notifications_enabled, notification_interval FROM users WHERE id = ?', [result.lastInsertRowid]);
+    const user = authRepository.getUserAuthProfile(result.lastInsertRowid);
     const token = this._generateToken(user);
     return { user, token };
   }
 
   login(username, password) {
-    const user = dbGet('SELECT * FROM users WHERE username = ? OR email = ?', [username, username]);
+    const user = authRepository.findUserForLogin(username);
     if (!user) {
       throw new Error('Kullanıcı adı veya şifre hatalı.');
     }
@@ -54,7 +47,7 @@ class AuthService {
       throw new Error('Kullanıcı adı veya şifre hatalı.');
     }
 
-    const privileges = dbGet('SELECT * FROM user_privileges WHERE user_id = ?', [user.id]);
+    const privileges = authRepository.getUserPrivileges(user.id);
 
     const safeUser = {
       id: user.id,
@@ -84,7 +77,7 @@ class AuthService {
     if (!['light', 'dark'].includes(theme)) {
       throw new Error('Geçersiz tema seçimi.');
     }
-    dbRun('UPDATE users SET theme_preference = ? WHERE id = ?', [theme, userId]);
+    authRepository.updateTheme(userId, theme);
     return { success: true, theme };
   }
 }

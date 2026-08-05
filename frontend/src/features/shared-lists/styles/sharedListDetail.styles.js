@@ -1,0 +1,63 @@
+export const sharedListDetailStyles = {
+  loadingContainer: "flex-1 justify-center items-center bg-light-bg dark:bg-dark-bg",
+  mainContainer: "flex-1 bg-light-bg dark:bg-dark-bg",
+  
+  headerContainer: "flex-row items-center px-2 pt-12 pb-4 border-b bg-light-surfaceElevated border-light-border dark:bg-dark-surfaceElevated dark:border-dark-border",
+  backButton: "p-2",
+  headerTitle: "text-lg font-bold flex-1 text-center text-text-lightPrimary dark:text-text-darkPrimary",
+  visibilityButton: "p-2 flex-row items-center",
+  visibilityIcon: "p-2",
+
+  scrollContainer: { padding: 16 },
+  
+  topActionsRow: "flex-row justify-between items-center mb-4",
+  listTypeSubtitle: "text-sm text-text-lightSecondary dark:text-text-darkSecondary",
+  inviteButton: "flex-row items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-primary",
+  inviteButtonText: "text-white text-xs font-bold",
+  saveButtonBase: "flex-row items-center gap-1.5 px-3 py-2 rounded-xl",
+  saveButtonSaved: "bg-transparent border border-brand-primary",
+  saveButtonNotSaved: "bg-brand-primary",
+  saveButtonTextBase: "text-xs font-bold",
+  saveButtonTextSaved: "text-brand-primary",
+  saveButtonTextNotSaved: "text-white",
+
+  sectionTitle: "text-base font-bold mb-3 mt-2 text-text-lightPrimary dark:text-text-darkPrimary",
+  membersScroll: "mb-6 py-1",
+  memberItem: "w-16 items-center mr-4",
+  memberAvatarContainer: "w-10 h-10 rounded-full items-center justify-center mb-1 bg-light-surfaceElevated dark:bg-dark-surfaceElevated",
+  memberAvatarImage: "w-full h-full rounded-[20px]",
+  memberAvatarFallback: "font-bold text-text-lightPrimary dark:text-text-darkPrimary",
+  memberUsername: "text-[11px] w-full text-center text-text-lightSecondary dark:text-text-darkSecondary",
+  memberRoleBase: "text-[10px]",
+  memberRoleOwner: "text-brand-primary",
+  memberRoleOther: "text-text-lightMuted dark:text-text-darkMuted",
+  
+  contentsHeaderRow: "flex-row justify-between items-center mb-3 mt-2",
+  contentsTitle: "text-base font-bold m-0 text-text-lightPrimary dark:text-text-darkPrimary",
+  addContentButton: "flex-row items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-primary/20",
+  addContentButtonText: "text-xs font-bold text-brand-primary",
+  
+  emptyContentsContainer: "items-center mt-8 px-6",
+  emptyContentsTitle: "mt-3 text-text-lightSecondary dark:text-text-darkSecondary",
+  emptyContentsSubtitle: "text-xs mt-1 text-center text-text-lightMuted dark:text-text-darkMuted",
+  
+  contentsGrid: "flex-row flex-wrap justify-between",
+  contentItem: "w-[48%] mb-4",
+  contentAddedBy: "text-[10px] mt-1 text-center text-text-lightMuted dark:text-text-darkMuted",
+  
+  modalOverlay: "absolute inset-0 bg-black/50 justify-center items-center z-[100]",
+  modalContainer: "w-[90%] p-6 rounded-2xl bg-light-surfaceElevated dark:bg-dark-surfaceElevated",
+  modalHeaderRow: "flex-row justify-between items-center mb-4",
+  modalTitle: "text-lg font-bold text-text-lightPrimary dark:text-text-darkPrimary",
+  modalInputContainer: "rounded-xl px-3 border mb-4 bg-light-bg border-light-border dark:bg-dark-bg dark:border-dark-border",
+  modalInput: "h-11 text-text-lightPrimary dark:text-text-darkPrimary",
+  modalLoader: "mb-4",
+  modalScroll: "max-h-[300px]",
+  
+  searchResultItem: "flex-row items-center justify-between py-2.5 border-b border-light-border dark:border-dark-border",
+  searchResultText: "font-medium text-text-lightPrimary dark:text-text-darkPrimary",
+  searchResultSubtitle: "text-[11px] text-text-lightSecondary dark:text-text-darkSecondary",
+  searchResultActionBtn: "px-3 py-1.5 rounded-lg bg-brand-primary/20",
+  searchResultActionText: "text-xs font-bold text-brand-primary",
+  emptySearchText: "text-center py-2.5 text-text-lightMuted dark:text-text-darkMuted",
+};

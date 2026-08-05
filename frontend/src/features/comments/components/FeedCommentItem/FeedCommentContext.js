@@ -5,7 +5,7 @@ import Icon from '@/features/icon/components/Icon';
 import { API_BASE_URL } from '@/constants/api';
 import { useTheme } from '@/context/ThemeContext';
 
-export default function FeedCommentContext({ comment, onPressContent }) {
+export default function FeedCommentContext({ comment, onPressContent, themeColor }) {
   const { colors: COLORS } = useTheme();
 
   return (
@@ -20,7 +20,10 @@ export default function FeedCommentContext({ comment, onPressContent }) {
           contentFit="cover" 
         />
       ) : (
-        <View className="w-8 h-12 rounded-md mr-2.5 bg-brand-primary justify-center items-center">
+        <View 
+          className="w-8 h-12 rounded-md mr-2.5 justify-center items-center"
+          style={{ backgroundColor: themeColor || COLORS.primary }}
+        >
            <Icon name={comment.content_type === 'movie' ? 'FilmStrip' : comment.content_type === 'series' ? 'Television' : 'Books'} size={24} color="#FFF" />
         </View>
       )}

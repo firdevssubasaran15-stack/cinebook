@@ -1,184 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert, FlatList, TextInput, Modal } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator, FlatList, TextInput, Modal } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Image } from 'expo-image';
-import * as ImagePicker from 'expo-image-picker';
 import { API_BASE_URL } from '@/constants/api';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
-import { usersApi } from '@/api/endpoints/users.api';
-import { commentsApi } from '@/api/endpoints/comments.api';
-import { sharedListsApi } from '@/api/endpoints/shared-lists.api';
 import Icon from '@/features/icon/components/Icon';
 import { LinearGradient } from 'expo-linear-gradient';
 import UserCommentItem from '@/features/comments/components/UserCommentItem';
 import { GRADIENTS } from '@/constants/colors';
+import { EMOTION_TAGS } from '@/constants/emotions';
+import { useUserProfile } from '@/features/user/hooks/useUserProfile';
+import { useProfileEdit } from '@/features/user/hooks/useProfileEdit';
+import { useUserRelations } from '@/features/user/hooks/useUserRelations';
+import { useShareManager } from '@/features/share/hooks/useShareManager';
+import UserWeeklyEmotionBadge from '@/features/user/components/UserWeeklyEmotionBadge';
+import UserSimilarityBadge from '@/features/user/components/UserSimilarityBadge';
+import ShareBottomSheet from '@/features/share/components/ShareBottomSheet';
+import { userProfileStyles as styles } from '@/features/user/styles/userProfile.styles';
 
 export default function UserProfileScreen() {
   const { id } = useLocalSearchParams();
   const { colors: COLORS, isDark } = useTheme();
   const { user, updateUser } = useAuth();
   
-  const [profile, setProfile] = useState(null);
-  const [comments, setComments] = useState([]);
-  const [publicLists, setPublicLists] = useState([]);
-  const [activeTab, setActiveTab] = useState('comments'); // 'comments' | 'lists'
-  const [loading, setLoading] = useState(true);
-  const [followLoading, setFollowLoading] = useState(false);
+  const {
+    profile, setProfile, comments, publicLists,
+    activeTab, setActiveTab, loading, followLoading,
+    handleToggleFollow, handleToggleLike, handleToggleDislike
+  } = useUserProfile(id, user);
 
-  const [userSearchQuery, setUserSearchQuery] = useState('');
-  const [userSearchResults, setUserSearchResults] = useState([]);
-  const [userSearchLoading, setUserSearchLoading] = useState(false);
+  const {
+    editProfileModal, setEditProfileModal, newUsername, setNewUsername,
+    isSavingProfile, isUploadingImage, pickImage, handleSaveUsername
+  } = useProfileEdit(user, updateUser, setProfile);
 
-  const [userListModal, setUserListModal] = useState({ visible: false, type: null });
-  const [userList, setUserList] = useState([]);
-  const [userListLoading, setUserListLoading] = useState(false);
+  const {
+    userSearchQuery, userSearchResults, userSearchLoading, handleUserSearch,
+    userListModal, setUserListModal, userList, userListLoading, openUserList
+  } = useUserRelations(id);
 
-  const [editProfileModal, setEditProfileModal] = useState(false);
-  const [newUsername, setNewUsername] = useState('');
-  const [isSavingProfile, setIsSavingProfile] = useState(false);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
-
-  const fetchData = async () => {
-    try {
-      const [profileRes, commentsRes, listsRes] = await Promise.all([
-        usersApi.getProfile(id),
-        usersApi.getUserComments(id),
-        sharedListsApi.getUserPublicLists(id)
-      ]);
-      setProfile(profileRes.data.data);
-      setComments(commentsRes.data.data);
-      setPublicLists(listsRes.data.data);
-    } catch (err) {
-      Alert.alert('Hata', 'Kullanıcı profili yüklenemedi.');
-      router.back();
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [id]);
-
-  const handleToggleFollow = async () => {
-    if (!user) {
-      Alert.alert('Uyarı', 'Takip etmek için giriş yapmalısınız.');
-      return;
-    }
-    
-    // Optimsitic UI Update
-    setProfile(prev => ({
-      ...prev,
-      isFollowing: !prev.isFollowing,
-      followersCount: prev.isFollowing ? prev.followersCount - 1 : prev.followersCount + 1
-    }));
-    
-    setFollowLoading(true);
-    try {
-      await usersApi.toggleFollow(id);
-    } catch (err) {
-      // Revert optimistic update
-      setProfile(prev => ({
-        ...prev,
-        isFollowing: !prev.isFollowing,
-        followersCount: prev.isFollowing ? prev.followersCount - 1 : prev.followersCount + 1
-      }));
-      Alert.alert('Hata', err.response?.data?.message || 'İşlem başarısız.');
-    } finally {
-      setFollowLoading(false);
-    }
-  };
-
-  const handleUserSearch = async (query) => {
-    setUserSearchQuery(query);
-    if (!query || query.trim().length < 2) {
-      setUserSearchResults([]);
-      return;
-    }
-    setUserSearchLoading(true);
-    try {
-      const res = await usersApi.searchUsers(query);
-      setUserSearchResults(res.data.data);
-    } catch (err) {
-      console.log('User search error:', err.message);
-    } finally {
-      setUserSearchLoading(false);
-    }
-  };
-
-  const openUserList = async (type) => {
-    setUserListModal({ visible: true, type });
-    setUserListLoading(true);
-    try {
-      const res = type === 'followers' ? await usersApi.getFollowers(id) : await usersApi.getFollowing(id);
-      setUserList(res.data.data);
-    } catch (err) {
-      Alert.alert('Hata', 'Kullanıcı listesi alınamadı.');
-      setUserListModal({ visible: false, type: null });
-    } finally {
-      setUserListLoading(false);
-    }
-  };
-
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Hata', 'Kamera rulonuza erişim izni gereklidir.');
-      return;
-    }
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.5,
-    });
-    if (!result.canceled) {
-      handleUpload(result.assets[0]);
-    }
-  };
-
-  const handleUpload = async (imageAsset) => {
-    setIsUploadingImage(true);
-    const formData = new FormData();
-    const uri = imageAsset.uri;
-    const fileType = imageAsset.mimeType || 'image/jpeg';
-    const fileName = imageAsset.fileName || `profile_${Date.now()}.jpg`;
-    formData.append('image', { uri, name: fileName, type: fileType });
-    try {
-      const res = await usersApi.updateProfileImage(formData);
-      updateUser(res.data);
-      setProfile(prev => ({ ...prev, profile_image: res.data.profile_image }));
-      Alert.alert('Başarılı', 'Profil resminiz güncellendi.');
-    } catch (err) {
-      Alert.alert('Hata', err.response?.data?.message || 'Resim yüklenemedi.');
-    } finally {
-      setIsUploadingImage(false);
-    }
-  };
-
-  const handleSaveUsername = async () => {
-    if (!newUsername || newUsername.trim() === user?.username) {
-      setEditProfileModal(false);
-      return;
-    }
-    setIsSavingProfile(true);
-    try {
-      const res = await usersApi.updateUsername(newUsername);
-      updateUser(res.data.data);
-      setProfile(prev => ({ ...prev, username: res.data.data.username }));
-      Alert.alert('Başarılı', 'Kullanıcı adınız güncellendi.');
-      setEditProfileModal(false);
-    } catch (err) {
-      Alert.alert('Hata', err.response?.data?.message || 'Kullanıcı adı güncellenemedi.');
-    } finally {
-      setIsSavingProfile(false);
-    }
-  };
+  const { 
+    isShareModalVisible, 
+    shareData, 
+    openShareSheet, 
+    closeShareSheet, 
+    handleShareAction 
+  } = useShareManager();
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-light-bg dark:bg-dark-bg">
+      <View className={styles.loadingContainer}>
         <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
     );
@@ -186,175 +58,91 @@ export default function UserProfileScreen() {
 
   const isMe = user?.id === parseInt(id);
 
-  const handleToggleLike = async (commentId) => {
-    if (!user) {
-      Alert.alert('Uyarı', 'Beğenmek için giriş yapmalısınız.');
-      return;
-    }
-
-    setComments(prev => prev.map(c => {
-      if (c.id === commentId) {
-        const isLiked = c.is_liked_by_user;
-        const isDisliked = c.is_disliked_by_user;
-        return {
-          ...c,
-          is_liked_by_user: !isLiked,
-          like_count: isLiked ? c.like_count - 1 : c.like_count + 1,
-          is_disliked_by_user: false,
-          dislike_count: isDisliked ? c.dislike_count - 1 : c.dislike_count
-        };
-      }
-      return c;
-    }));
-
-    try {
-      await commentsApi.toggleLike(commentId);
-    } catch (err) {
-      fetchData(); // Revert on error
-    }
-  };
-
-  const handleToggleDislike = async (commentId) => {
-    if (!user) {
-      Alert.alert('Uyarı', 'Beğenmemek için giriş yapmalısınız.');
-      return;
-    }
-
-    setComments(prev => prev.map(c => {
-      if (c.id === commentId) {
-        const isDisliked = c.is_disliked_by_user;
-        const isLiked = c.is_liked_by_user;
-        return {
-          ...c,
-          is_disliked_by_user: !isDisliked,
-          dislike_count: isDisliked ? c.dislike_count - 1 : c.dislike_count + 1,
-          is_liked_by_user: false,
-          like_count: isLiked ? c.like_count - 1 : c.like_count
-        };
-      }
-      return c;
-    }));
-
-    try {
-      await commentsApi.toggleDislike(commentId);
-    } catch (err) {
-      fetchData(); // Revert on error
-    }
-  };
-
   const renderHeader = () => (
     <View>
-      <LinearGradient colors={isDark ? GRADIENTS.hero : [COLORS.surfaceElevated, COLORS.background]} style={{ paddingTop: 60, paddingBottom: 40, paddingHorizontal: 20, alignItems: 'center', borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
-        <TouchableOpacity style={{ position: 'absolute', top: 50, left: 20, padding: 10, zIndex: 10 }} onPress={() => router.back()}>
+      <LinearGradient colors={isDark ? GRADIENTS.hero : [COLORS.surfaceElevated, COLORS.background]} style={styles.headerGradient}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Icon name="ArrowLeft" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={{ position: 'absolute', top: 50, right: 20, padding: 10, zIndex: 10 }} onPress={() => router.push('/calendar')}>
+        <TouchableOpacity style={styles.calendarButton} onPress={() => router.push('/calendar')}>
           <Icon name="CalendarBlank" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
         
-        <View style={{ alignItems: 'center', marginBottom: 24 }}>
+        <View style={styles.profileInfoContainer}>
           {profile?.profile_image ? (
             <Image 
               source={{ uri: `${API_BASE_URL}${profile.profile_image}` }} 
-              style={{ width: 90, height: 90, borderRadius: 45, marginBottom: 12 }}
+              style={styles.profileImage}
               contentFit="cover" 
             />
           ) : (
-            <View style={{ width: 90, height: 90, borderRadius: 45, justifyContent: 'center', alignItems: 'center', marginBottom: 12, backgroundColor: COLORS.primary }}>
-              <Text style={{ color: '#fff', fontSize: 36, fontWeight: 'bold' }}>{profile?.username?.[0]?.toUpperCase()}</Text>
+            <View style={[styles.profileImageFallback, { backgroundColor: COLORS.primary }]}>
+              <Text style={styles.profileImageFallbackText}>{profile?.username?.[0]?.toUpperCase()}</Text>
             </View>
           )}
-          <Text style={{ fontSize: 22, fontWeight: '800', marginBottom: 4, color: COLORS.textPrimary, textAlign: 'center' }}>@{profile?.username}</Text>
-          <Text style={{ fontSize: 12, color: COLORS.textMuted, textAlign: 'center' }}>
+          <Text style={[styles.username, { color: COLORS.textPrimary }]}>@{profile?.username}</Text>
+          <Text style={[styles.joinDate, { color: COLORS.textMuted }]}>
             Katılım: {new Date(profile?.created_at).toLocaleDateString('tr-TR')}
           </Text>
-          {profile?.weeklyEmotion && (() => {
-            const emotionData = require('@/constants/emotions').EMOTION_TAGS.find(e => e.id === profile.weeklyEmotion);
-            const emotionLabel = emotionData ? emotionData.label : profile.weeklyEmotion;
-            const tagColor = emotionData ? (COLORS[emotionData.id] || COLORS.textPrimary) : COLORS.primary;
-            return (
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12 }}>
-                <Text style={{ fontSize: 13, marginRight: 6, color: COLORS.textSecondary }}>Bu hafta en çok hissedilen:</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, backgroundColor: tagColor + '20' }}>
-                  {emotionData && <Icon name={emotionData.iconName} size={14} color={tagColor} style={{ marginRight: 4 }} />}
-                  <Text style={{ color: tagColor, fontSize: 13, fontWeight: 'bold' }}>{emotionLabel}</Text>
-                </View>
-              </View>
-            );
-          })()}
+          <UserWeeklyEmotionBadge 
+            emotionId={profile?.weeklyEmotion} 
+            profile={profile}
+            onPress={openShareSheet} 
+          />
           
-          {profile?.similarityPercentage != null && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, borderWidth: 1, borderColor: `${COLORS.primary}40`, backgroundColor: `${COLORS.primary}10` }}>
-              <Icon name="Sparkle" size={16} color={COLORS.primary} weight="fill" />
-              <Text style={{ fontSize: 13, fontWeight: 'bold', marginLeft: 6, color: COLORS.primary }}>
-                Seninle %{profile.similarityPercentage} benzer zevke sahip
-              </Text>
-            </View>
-          )}
+          <UserSimilarityBadge 
+            profile={profile} 
+            currentUser={user} 
+            onPress={openShareSheet} 
+          />
         </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
-          <TouchableOpacity style={{ alignItems: 'center', paddingHorizontal: 24 }} onPress={() => openUserList('followers')}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 4, color: COLORS.textPrimary }}>{profile?.followersCount || 0}</Text>
-            <Text style={{ fontSize: 13, color: COLORS.textSecondary }}>Takipçi</Text>
+        <View style={styles.statsRow}>
+          <TouchableOpacity style={styles.statItem} onPress={() => openUserList('followers')}>
+            <Text style={[styles.statValue, { color: COLORS.textPrimary }]}>{profile?.followersCount || 0}</Text>
+            <Text style={[styles.statLabel, { color: COLORS.textSecondary }]}>Takipçi</Text>
           </TouchableOpacity>
-          <View style={{ width: 1, height: 28, backgroundColor: COLORS.border }} />
-          <TouchableOpacity style={{ alignItems: 'center', paddingHorizontal: 24 }} onPress={() => openUserList('following')}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 4, color: COLORS.textPrimary }}>{profile?.followingCount || 0}</Text>
-            <Text style={{ fontSize: 13, color: COLORS.textSecondary }}>Takip Edilen</Text>
+          <View style={[styles.statDivider, { backgroundColor: COLORS.border }]} />
+          <TouchableOpacity style={styles.statItem} onPress={() => openUserList('following')}>
+            <Text style={[styles.statValue, { color: COLORS.textPrimary }]}>{profile?.followingCount || 0}</Text>
+            <Text style={[styles.statLabel, { color: COLORS.textSecondary }]}>Takip Edilen</Text>
           </TouchableOpacity>
         </View>
 
         {!isMe ? (
           <TouchableOpacity 
-            style={{
-              paddingHorizontal: 32,
-              paddingVertical: 12,
-              borderRadius: 9999,
-              minWidth: 160,
-              alignItems: 'center',
-              borderWidth: 1,
+            style={[styles.actionButtonBase, {
               backgroundColor: profile?.isFollowing ? 'transparent' : COLORS.primary,
               borderColor: COLORS.primary,
-            }}
+            }]}
             onPress={handleToggleFollow}
             disabled={followLoading}
           >
-            <Text style={{ fontSize: 15, fontWeight: 'bold', color: profile?.isFollowing ? COLORS.primary : '#fff' }}>
+            <Text style={[styles.actionButtonText, { color: profile?.isFollowing ? COLORS.primary : '#fff' }]}>
               {profile?.isFollowing ? 'Takiptesin' : 'Takip Et'}
             </Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity 
-            style={{
-              backgroundColor: 'transparent',
-              borderWidth: 1,
-              borderColor: COLORS.border,
-              paddingHorizontal: 32,
-              paddingVertical: 12,
-              borderRadius: 9999,
-              minWidth: 160,
-              alignItems: 'center',
-            }}
+            style={[styles.actionButtonBase, { backgroundColor: 'transparent', borderColor: COLORS.border }]}
             onPress={() => {
               setNewUsername(user?.username || '');
               setEditProfileModal(true);
             }}
           >
-            <Text style={{ fontSize: 15, fontWeight: 'bold', color: COLORS.textPrimary }}>
+            <Text style={[styles.actionButtonText, { color: COLORS.textPrimary }]}>
               Profili Düzenle
             </Text>
           </TouchableOpacity>
         )}
       </LinearGradient>
 
-      {/* User Search Bar moved to top */}
-      <View className="mx-5 mt-5 mb-2.5 z-[99]">
-        <View className="flex-row items-center rounded-2xl px-4 py-3 border bg-light-surfaceElevated border-light-border dark:bg-black/5 dark:border-dark-border">
+      <View className={styles.searchContainer}>
+        <View className={styles.searchInputRow}>
           <Icon name="MagnifyingGlass" size={20} color={COLORS.textSecondary} />
           <TextInput
-            className="flex-1 ml-3 text-base text-text-lightPrimary dark:text-text-darkPrimary"
+            className={styles.searchInput}
             placeholder="Kullanıcı ara..."
             placeholderTextColor={COLORS.textMuted}
             value={userSearchQuery}
@@ -364,43 +152,42 @@ export default function UserProfileScreen() {
         </View>
         
         {userSearchResults.length > 0 && (
-          <View className="mt-2 rounded-2xl p-2 border bg-light-surfaceElevated border-light-border dark:bg-dark-surfaceElevated dark:border-dark-border">
+          <View className={styles.searchResultsContainer}>
             {userSearchResults.map(u => (
               <TouchableOpacity 
                 key={u.id} 
-                className="flex-row items-center p-3 rounded-xl"
+                className={styles.searchResultItem}
                 onPress={() => {
-                  setUserSearchQuery('');
-                  setUserSearchResults([]);
+                  handleUserSearch('');
                   router.push(`/user/${u.id}`);
                 }}
               >
                 {u.profile_image ? (
-                  <Image source={{ uri: `${API_BASE_URL}${u.profile_image}` }} className="w-9 h-9 rounded-full mr-3" contentFit="cover" />
+                  <Image source={{ uri: `${API_BASE_URL}${u.profile_image}` }} className={styles.searchResultImage} contentFit="cover" />
                 ) : (
-                  <View className="w-9 h-9 rounded-full mr-3 bg-brand-primary justify-center items-center">
+                  <View className={styles.searchResultImageFallback}>
                     <Text className="text-white font-bold">{u.username[0].toUpperCase()}</Text>
                   </View>
                 )}
-                <Text className="font-medium text-text-lightPrimary dark:text-text-darkPrimary">@{u.username}</Text>
+                <Text className={styles.searchResultText}>@{u.username}</Text>
               </TouchableOpacity>
             ))}
           </View>
         )}
       </View>
 
-      <View className="flex-row mx-5 mb-2.5 rounded-xl p-1 bg-light-surfaceElevated dark:bg-black/5">
+      <View className={styles.tabsContainer}>
         <TouchableOpacity 
-          className={`flex-1 py-2.5 items-center rounded-lg ${activeTab === 'comments' ? 'bg-brand-primary' : 'bg-transparent'}`}
+          className={`${styles.tabButtonBase} ${activeTab === 'comments' ? styles.tabButtonActive : styles.tabButtonInactive}`}
           onPress={() => setActiveTab('comments')}
         >
-          <Text className={`font-bold ${activeTab === 'comments' ? 'text-white' : 'text-text-lightSecondary dark:text-text-darkSecondary'}`}>Yorumlar</Text>
+          <Text className={activeTab === 'comments' ? styles.tabTextActive : styles.tabTextInactive}>Yorumlar</Text>
         </TouchableOpacity>
         <TouchableOpacity 
-          className={`flex-1 py-2.5 items-center rounded-lg ${activeTab === 'lists' ? 'bg-brand-primary' : 'bg-transparent'}`}
+          className={`${styles.tabButtonBase} ${activeTab === 'lists' ? styles.tabButtonActive : styles.tabButtonInactive}`}
           onPress={() => setActiveTab('lists')}
         >
-          <Text className={`font-bold ${activeTab === 'lists' ? 'text-white' : 'text-text-lightSecondary dark:text-text-darkSecondary'}`}>Listeler</Text>
+          <Text className={activeTab === 'lists' ? styles.tabTextActive : styles.tabTextInactive}>Listeler</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -409,7 +196,7 @@ export default function UserProfileScreen() {
   const renderFooter = () => null;
 
   return (
-    <View className="flex-1 bg-light-bg dark:bg-dark-bg">
+    <View className={styles.mainContainer}>
       <FlatList
         data={activeTab === 'comments' ? comments : publicLists}
         keyExtractor={(item) => item.id.toString()}
@@ -420,19 +207,19 @@ export default function UserProfileScreen() {
           } else {
             return (
               <TouchableOpacity
-                className="mx-5 mb-3 p-4 rounded-2xl flex-row items-center border bg-light-surfaceElevated border-light-border dark:bg-dark-surfaceElevated dark:border-dark-border"
+                className={styles.listItem}
                 onPress={() => router.push(`/shared-list/${item.id}`)}
               >
                 <View className="flex-1">
-                  <Text className="text-base font-bold text-text-lightPrimary dark:text-text-darkPrimary" numberOfLines={1}>{item.name}</Text>
-                  <View className="flex-row items-center mt-2 gap-3">
-                    <View className="flex-row items-center">
+                  <Text className={styles.listTitle} numberOfLines={1}>{item.name}</Text>
+                  <View className={styles.listStatsRow}>
+                    <View className={styles.listStatItem}>
                       <Icon name="Users" size={14} color={COLORS.textSecondary} />
-                      <Text className="text-xs ml-1 text-text-lightSecondary dark:text-text-darkSecondary">{item.member_count}</Text>
+                      <Text className={styles.listStatText}>{item.member_count}</Text>
                     </View>
-                    <View className="flex-row items-center">
+                    <View className={styles.listStatItem}>
                       <Icon name={item.type === 'watching' ? "MonitorPlay" : "BookOpen"} size={14} color={COLORS.textSecondary} />
-                      <Text className="text-xs ml-1 text-text-lightSecondary dark:text-text-darkSecondary">{item.content_count}</Text>
+                      <Text className={styles.listStatText}>{item.content_count}</Text>
                     </View>
                   </View>
                 </View>
@@ -443,9 +230,9 @@ export default function UserProfileScreen() {
         }}
         contentContainerStyle={{ paddingBottom: 20 }}
         ListEmptyComponent={() => (
-          <View className="p-10 items-center justify-center">
+          <View className={styles.emptyContainer}>
             <Icon name={activeTab === 'comments' ? "ChatCircle" : "List"} size={48} color={COLORS.border} />
-            <Text className="mt-3 text-[15px] text-text-lightSecondary dark:text-text-darkSecondary">
+            <Text className={styles.emptyText}>
               {activeTab === 'comments' ? 'Kullanıcı henüz hiç yorum yapmamış.' : 'Herkese açık bir liste bulunmuyor.'}
             </Text>
           </View>
@@ -456,16 +243,17 @@ export default function UserProfileScreen() {
         ListFooterComponent={renderFooter}
       />
       
+      {/* Users List Modal */}
       <Modal
         visible={userListModal.visible}
         transparent={true}
         animationType="fade"
         onRequestClose={() => setUserListModal({ visible: false, type: null })}
       >
-        <View className="flex-1 justify-center items-center bg-black/50">
-          <View className="w-[85%] max-h-[70%] rounded-3xl p-5 bg-light-bg dark:bg-dark-bg">
-            <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-lg font-bold text-text-lightPrimary dark:text-text-darkPrimary">
+        <View className={styles.modalOverlay}>
+          <View className={styles.listModalContainer}>
+            <View className={styles.modalHeaderRow}>
+              <Text className={styles.modalTitle}>
                 {userListModal.type === 'followers' ? 'Takipçiler' : 'Takip Edilenler'}
               </Text>
               <TouchableOpacity onPress={() => setUserListModal({ visible: false, type: null })}>
@@ -485,20 +273,20 @@ export default function UserProfileScreen() {
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    className="flex-row items-center py-2.5 border-b border-light-border dark:border-dark-border"
+                    className={styles.modalUserItem}
                     onPress={() => {
                       setUserListModal({ visible: false, type: null });
                       router.push(`/user/${item.id}`);
                     }}
                   >
                     {item.profile_image ? (
-                      <Image source={{ uri: `${API_BASE_URL}${item.profile_image}` }} className="w-10 h-10 rounded-full mr-3" contentFit="cover" />
+                      <Image source={{ uri: `${API_BASE_URL}${item.profile_image}` }} className={styles.modalUserImage} contentFit="cover" />
                     ) : (
-                      <View className="w-10 h-10 rounded-full mr-3 bg-brand-primary justify-center items-center">
+                      <View className={styles.modalUserImageFallback}>
                         <Text className="text-white font-bold text-base">{item.username[0].toUpperCase()}</Text>
                       </View>
                     )}
-                    <Text className="text-base font-medium text-text-lightPrimary dark:text-text-darkPrimary">@{item.username}</Text>
+                    <Text className={styles.modalUserText}>@{item.username}</Text>
                   </TouchableOpacity>
                 )}
                 showsVerticalScrollIndicator={false}
@@ -508,31 +296,32 @@ export default function UserProfileScreen() {
         </View>
       </Modal>
 
+      {/* Edit Profile Modal */}
       <Modal
         visible={editProfileModal}
         transparent={true}
         animationType="fade"
         onRequestClose={() => setEditProfileModal(false)}
       >
-        <View className="flex-1 justify-center items-center bg-black/50">
-          <View className="w-[85%] rounded-3xl p-6 items-center bg-light-bg dark:bg-dark-bg">
+        <View className={styles.modalOverlay}>
+          <View className={styles.editModalContainer}>
             <Text className="text-lg font-bold mb-5 text-text-lightPrimary dark:text-text-darkPrimary">
               Profili Düzenle
             </Text>
             
-            <TouchableOpacity onPress={pickImage} className="relative mb-6">
+            <TouchableOpacity onPress={pickImage} className={styles.editImageButton}>
               {profile?.profile_image ? (
                 <Image 
                   source={{ uri: `${API_BASE_URL}${profile.profile_image}` }} 
-                  className="w-[100px] h-[100px] rounded-full"
+                  className={styles.editImagePreview}
                   contentFit="cover" 
                 />
               ) : (
-                <View className="w-[100px] h-[100px] rounded-full bg-brand-primary justify-center items-center">
-                  <Text className="text-white text-4xl font-bold">{profile?.username?.[0]?.toUpperCase()}</Text>
+                <View className={styles.editImageFallback}>
+                  <Text className={styles.editImageFallbackText}>{profile?.username?.[0]?.toUpperCase()}</Text>
                 </View>
               )}
-              <View className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-brand-primary justify-center items-center border-2 border-light-bg dark:border-dark-bg">
+              <View className={styles.editIconContainer}>
                 {isUploadingImage ? (
                   <ActivityIndicator size="small" color="#fff" />
                 ) : (
@@ -542,9 +331,9 @@ export default function UserProfileScreen() {
             </TouchableOpacity>
             
             <View className="w-full mb-6">
-              <Text className="text-sm mb-2 text-text-lightSecondary dark:text-text-darkSecondary">Kullanıcı Adı</Text>
+              <Text className={styles.editInputLabel}>Kullanıcı Adı</Text>
               <TextInput
-                className="w-full h-12 rounded-xl px-4 text-base border bg-light-surfaceElevated border-light-border text-text-lightPrimary dark:bg-dark-surfaceElevated dark:border-dark-border dark:text-text-darkPrimary"
+                className={styles.editInput}
                 value={newUsername}
                 onChangeText={setNewUsername}
                 placeholder="Kullanıcı adı"
@@ -554,29 +343,36 @@ export default function UserProfileScreen() {
               />
             </View>
 
-            <View className="flex-row gap-3 w-full">
+            <View className={styles.editButtonsRow}>
               <TouchableOpacity 
-                className="flex-1 py-3 rounded-xl items-center border bg-light-surfaceElevated border-light-border dark:bg-dark-surfaceElevated dark:border-dark-border"
+                className={styles.editCancelButton}
                 onPress={() => setEditProfileModal(false)}
                 disabled={isSavingProfile}
               >
-                <Text className="font-semibold text-text-lightPrimary dark:text-text-darkPrimary">İptal</Text>
+                <Text className={styles.editCancelText}>İptal</Text>
               </TouchableOpacity>
               <TouchableOpacity 
-                className="flex-1 py-3 rounded-xl items-center bg-brand-primary"
+                className={styles.editSaveButton}
                 onPress={handleSaveUsername}
                 disabled={isSavingProfile}
               >
                 {isSavingProfile ? (
                   <ActivityIndicator size="small" color="#fff" />
                 ) : (
-                  <Text className="text-white font-semibold">Kaydet</Text>
+                  <Text className={styles.editSaveText}>Kaydet</Text>
                 )}
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
+
+      <ShareBottomSheet 
+        visible={isShareModalVisible} 
+        onClose={closeShareSheet} 
+        shareData={shareData} 
+        onShare={handleShareAction} 
+      />
     </View>
   );
 }

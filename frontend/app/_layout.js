@@ -6,6 +6,13 @@ import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { View } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import { useAppState } from '@/hooks/useAppState';
+
+// React Navigation bellek yönetimindeki donma/siyah ekran sorunlarını engellemek için.
+// Siyah ekran hatası devam ettiği için screens optimizasyonunu kapatma kodunu (enableScreens(false)) 
+// iOS 17+'da başka bir boş ekran hatasına yol açtığı için kaldırıyoruz.
 
 function RootStack() {
   const { colors, isDark } = useTheme();
@@ -19,8 +26,19 @@ function RootStack() {
       text: colors.textPrimary,
       border: colors.border,
       primary: colors.primary,
+      primary: colors.primary,
     },
   };
+
+  // AppState hook'u ile önplan/arkaplan kontrolü
+  const { isForeground } = useAppState();
+
+  // Arkaplandayken ağır renderları durdurmak veya geri dönüşte UI'ı yenilemek için 
+  // isForeground bilgisini kullanabiliriz. (Eğer tamamen unmount gerekiyorsa)
+  if (!isForeground) {
+    // Çok kritik durumlarda sadece boş View dönebilir veya UI'ı dondurabiliriz,
+    // ancak genellikle Expo Router kendi halleder, biz freezeOnBlur ayarı yapacağız.
+  }
   
   return (
     <NavThemeProvider value={navTheme}>
@@ -31,10 +49,11 @@ function RootStack() {
           headerTintColor: colors.textPrimary,
           headerTitleStyle: { fontWeight: '700' },
           contentStyle: { backgroundColor: colors.background },
+          freezeOnBlur: false, // Siyah ekran hatasını önleyen en kritik ayarlardan biri
         }}
       >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false, freezeOnBlur: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false, freezeOnBlur: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="detail/[id]"
@@ -49,6 +68,15 @@ import Toast from 'react-native-toast-message';
 import { toastConfig } from '@/config/toastConfig';
 
 export default function RootLayout() {
+  useEffect(() => {
+    // Expo Router'ın Splash ekranını gizleyemediği uç durumlar (örneğin deep link takılmaları) için 
+    // 2.5 saniye sonra Splash ekranını zorla gizliyoruz.
+    const timer = setTimeout(() => {
+      SplashScreen.hideAsync().catch(() => {});
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>

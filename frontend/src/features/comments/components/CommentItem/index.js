@@ -16,7 +16,8 @@ export default function CommentItem({
   onEdit, 
   onToggleLike, 
   onToggleDislike, 
-  onReply 
+  onReply,
+  onShare
 }) {
   const { state, actions } = useCommentItem({ comment, isFeeling, onEdit, onReply });
 
@@ -45,6 +46,7 @@ export default function CommentItem({
           onReply={onReply}
           onToggleLike={onToggleLike}
           onToggleDislike={onToggleDislike}
+          onShare={onShare}
           actions={actions}
         />
       </View>

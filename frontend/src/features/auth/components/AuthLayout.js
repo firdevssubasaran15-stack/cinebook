@@ -5,7 +5,7 @@ import { GRADIENTS } from '@/constants/colors';
 
 export default function AuthLayout({ children }) {
   return (
-    <LinearGradient colors={GRADIENTS.hero} className="flex-1">
+    <LinearGradient colors={GRADIENTS.hero} style={{ flex: 1 }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"

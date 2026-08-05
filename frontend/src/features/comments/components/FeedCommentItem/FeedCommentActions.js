@@ -3,11 +3,11 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from '@/features/icon/components/Icon';
 import { useTheme } from '@/context/ThemeContext';
 
-export default function FeedCommentActions({ comment, onLike, onDislike }) {
+export default function FeedCommentActions({ comment, onLike, onDislike, onShare }) {
   const { colors: COLORS } = useTheme();
 
   return (
-    <View className="flex-row justify-start items-center">
+    <View className="flex-row justify-between items-center mt-2">
       <View className="flex-row gap-3">
         <TouchableOpacity className="flex-row items-center p-1.5" onPress={onLike}>
           <Icon 
@@ -37,6 +37,10 @@ export default function FeedCommentActions({ comment, onLike, onDislike }) {
           </Text>
         </TouchableOpacity>
       </View>
+
+      <TouchableOpacity className="p-1.5" onPress={onShare}>
+        <Icon name="PaperPlaneRight" size={20} color={COLORS.textSecondary} />
+      </TouchableOpacity>
     </View>
   );
 }

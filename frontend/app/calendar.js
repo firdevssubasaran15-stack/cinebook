@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Modal, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Image } from 'expo-image';
 import { useTheme } from '@/context/ThemeContext';
 import Icon from '@/features/icon/components/Icon';
-import { calendarApi } from '@/api/endpoints/calendar.api';
 import ContentCard from '@/features/content/components/ContentCard';
 import { API_BASE_URL } from '@/constants/api';
+import { useCalendar } from '@/features/calendar/hooks/useCalendar';
+import { calendarStyles as styles } from '@/features/calendar/styles/calendar.styles';
 
 LocaleConfig.locales['tr'] = {
   monthNames: ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],
@@ -20,33 +21,15 @@ LocaleConfig.defaultLocale = 'tr';
 
 export default function CalendarScreen() {
   const { colors: COLORS } = useTheme();
-  const [history, setHistory] = useState({});
-  const [loading, setLoading] = useState(true);
   
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-
-  useEffect(() => {
-    fetchHistory();
-  }, []);
-
-  const fetchHistory = async () => {
-    try {
-      const res = await calendarApi.getHistory();
-      setHistory(res.data.data);
-    } catch (err) {
-      console.log('Calendar fetch error:', err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onDayPress = (day) => {
-    if (history[day.dateString] && history[day.dateString].length > 0) {
-      setSelectedDate(day.dateString);
-      setShowModal(true);
-    }
-  };
+  const {
+    history,
+    loading,
+    selectedDate,
+    showModal,
+    setShowModal,
+    onDayPress
+  } = useCalendar();
 
   const renderDay = ({ date, state }) => {
     const isToday = state === 'today';
@@ -55,32 +38,36 @@ export default function CalendarScreen() {
     
     // Yalnızca o ayın günleri tıklanabilir/görülebilir
     if (state === 'disabled') {
-      return <View className="w-11 h-11 rounded-full justify-center items-center overflow-hidden relative m-0.5"><Text className="text-text-lightMuted dark:text-text-darkMuted">{date.day}</Text></View>;
+      return (
+        <View className={styles.dayContainerBase}>
+          <Text className={styles.dayDisabledText}>{date.day}</Text>
+        </View>
+      );
     }
 
     return (
       <TouchableOpacity 
-        className={`w-11 h-11 rounded-full justify-center items-center overflow-hidden relative m-0.5 ${isToday ? 'border border-brand-primary' : ''}`}
+        className={`${styles.dayContainerBase} ${isToday ? styles.dayActiveContainer : ''}`}
         onPress={() => onDayPress(date)}
         activeOpacity={hasData ? 0.7 : 1}
       >
         {hasData && dayData[0].cover_image && (
           <Image 
             source={{ uri: `${API_BASE_URL}${dayData[0].cover_image}` }} 
-            className="absolute w-full h-full opacity-50 bg-black"
+            className={styles.dayImage}
             contentFit="cover"
           />
         )}
-        <View className="z-10">
-          <Text className={`text-base shadow-sm shadow-black/75 ${hasData ? 'text-white' : 'text-text-lightPrimary dark:text-text-darkPrimary'} ${isToday ? (hasData ? 'font-bold text-white' : 'font-bold text-brand-primary') : ''}`}>
+        <View className={styles.dayTextContainer}>
+          <Text className={`${styles.dayTextBase} ${hasData ? styles.dayTextHasData : styles.dayTextNoData} ${isToday ? (hasData ? styles.dayTextTodayHasData : styles.dayTextTodayNoData) : ''}`}>
             {date.day}
           </Text>
         </View>
         
         {/* +N Rozeti */}
         {hasData && dayData.length > 1 && (
-          <View className="absolute top-0.5 right-0.5 bg-status-error rounded-lg px-1 py-0.5 z-20">
-            <Text className="text-white text-[8px] font-bold">+{dayData.length - 1}</Text>
+          <View className={styles.badgeContainer}>
+            <Text className={styles.badgeText}>+{dayData.length - 1}</Text>
           </View>
         )}
       </TouchableOpacity>
@@ -88,17 +75,21 @@ export default function CalendarScreen() {
   };
 
   if (loading) {
-    return <View className="flex-1 justify-center items-center bg-light-bg dark:bg-dark-bg"><ActivityIndicator size="large" color={COLORS.primary} /></View>;
+    return (
+      <View className={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
   }
 
   return (
-    <View className="flex-1 bg-light-bg dark:bg-dark-bg">
-      <View className="flex-row items-center px-2 pt-12 pb-4 border-b bg-light-surfaceElevated border-light-border dark:bg-dark-surfaceElevated dark:border-dark-border">
-        <TouchableOpacity onPress={() => router.back()} className="p-2">
+    <View className={styles.mainContainer}>
+      <View className={styles.headerContainer}>
+        <TouchableOpacity onPress={() => router.back()} className={styles.backButton}>
           <Icon name="CaretLeft" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text className="text-lg font-bold flex-1 text-center text-text-lightPrimary dark:text-text-darkPrimary">Tüketim Geçmişi</Text>
-        <View className="w-10" />
+        <Text className={styles.headerTitle}>Tüketim Geçmişi</Text>
+        <View className={styles.headerSpacer} />
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
@@ -126,18 +117,18 @@ export default function CalendarScreen() {
           animationType="slide"
           onRequestClose={() => setShowModal(false)}
         >
-          <View className="flex-1 justify-end bg-black/50">
-            <View className="h-[70%] rounded-t-3xl overflow-hidden bg-light-bg dark:bg-dark-bg">
-              <View className="flex-row justify-between items-center p-5 border-b border-light-border dark:border-dark-border">
-                <Text className="text-lg font-bold text-text-lightPrimary dark:text-text-darkPrimary">{selectedDate} Tüketimleri</Text>
+          <View className={styles.modalOverlay}>
+            <View className={styles.modalContainer}>
+              <View className={styles.modalHeader}>
+                <Text className={styles.modalTitle}>{selectedDate} Tüketimleri</Text>
                 <TouchableOpacity onPress={() => setShowModal(false)}>
                   <Icon name="X" size={24} color={COLORS.textSecondary} />
                 </TouchableOpacity>
               </View>
               <ScrollView contentContainerStyle={{ padding: 16 }}>
-                <View className="flex-row flex-wrap justify-between">
+                <View className={styles.modalGrid}>
                   {history[selectedDate].map(item => (
-                    <View key={item.library_id} className="w-[48%] mb-4">
+                    <View key={item.library_id} className={styles.modalGridItem}>
                       <ContentCard item={item} onPress={() => { setShowModal(false); router.push(`/detail/${item.id}`); }} />
                     </View>
                   ))}

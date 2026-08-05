@@ -17,6 +17,7 @@ export default function CommentThread({
   onToggleDislike,
   onReply,
   onDelete,
+  onShare,
 }) {
   // Max depth is typically limited in UI to avoid squishing the layout.
   // We'll cap indentation visually at 4-5 levels, but still allow infinite replies in data.
@@ -46,6 +47,7 @@ export default function CommentThread({
           onToggleDislike={onToggleDislike}
           onReply={canReply ? onReply : undefined}
           onDelete={canDelete ? () => onDelete(comment.id) : undefined}
+          onShare={onShare}
         />
       </View>
 
@@ -65,6 +67,7 @@ export default function CommentThread({
               onToggleDislike={onToggleDislike}
               onReply={onReply}
               onDelete={onDelete}
+              onShare={onShare}
             />
           ))}
         </View>

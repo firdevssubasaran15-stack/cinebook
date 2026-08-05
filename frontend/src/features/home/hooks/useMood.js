@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storageService } from '@/services/storage.service';
 import { contentApi } from '@/api/endpoints/content.api';
 
 export const useMood = () => {
@@ -16,7 +16,7 @@ export const useMood = () => {
     try {
       const today = new Date().toISOString().split('T')[0];
       const hideKey = `hideMoodModal_${today}`;
-      const hidden = await AsyncStorage.getItem(hideKey);
+      const hidden = await storageService.getItem(hideKey);
       if (hidden !== 'true') {
         setShowMoodModal(true);
       }
@@ -27,7 +27,7 @@ export const useMood = () => {
     if (doNotShowToday) {
       const today = new Date().toISOString().split('T')[0];
       const hideKey = `hideMoodModal_${today}`;
-      await AsyncStorage.setItem(hideKey, 'true');
+      await storageService.setItem(hideKey, 'true');
     }
     setShowMoodModal(false);
   };

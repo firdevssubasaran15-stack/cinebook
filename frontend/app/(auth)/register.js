@@ -9,6 +9,7 @@ import AuthInput from '@/features/auth/components/AuthInput';
 import AuthButton from '@/features/auth/components/AuthButton';
 import RememberMeCheckbox from '@/features/auth/components/RememberMeCheckbox';
 import PasswordValidator, { isPasswordValid } from '@/features/auth/components/PasswordValidator';
+import { registerStyles as styles } from '@/features/auth/styles/register.styles';
 
 export default function RegisterScreen() {
   const {
@@ -34,8 +35,8 @@ export default function RegisterScreen() {
         subtitle="Topluluğa Katıl" 
       />
 
-      <View className="rounded-3xl p-7 border bg-light-surface border-light-border dark:bg-dark-surface dark:border-dark-border">
-        <Text className="text-2xl font-bold mb-6 text-text-lightPrimary dark:text-text-darkPrimary">
+      <View className={styles.container}>
+        <Text className={styles.title}>
           Kayıt Ol
         </Text>
 
@@ -54,7 +55,7 @@ export default function RegisterScreen() {
           keyboardType="email-address"
         />
 
-        <View className="mb-0">
+        <View className={styles.passwordContainer}>
           <AuthInput
             label="Şifre"
             value={password}
@@ -83,9 +84,9 @@ export default function RegisterScreen() {
           disabled={!isPasswordValid(password)}
         />
 
-        <TouchableOpacity className="mt-5 items-center" onPress={() => router.back()}>
-          <Text className="text-sm text-text-lightSecondary dark:text-text-darkSecondary">
-            Zaten hesabın var mı? <Text className="font-bold text-brand-secondary">Giriş Yap</Text>
+        <TouchableOpacity className={styles.loginLinkContainer} onPress={() => router.back()}>
+          <Text className={styles.loginLinkText}>
+            Zaten hesabın var mı? <Text className={styles.loginLinkBold}>Giriş Yap</Text>
           </Text>
         </TouchableOpacity>
       </View>

@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useInvitations } from '@/features/layout/hooks/useInvitations';
 import TabIcon from '@/features/layout/components/TabIcon';
 import InvitationToast from '@/features/layout/components/InvitationToast';
+import { layoutStyles as styles } from '@/features/layout/styles/layout.styles';
 
 export default function TabsLayout() {
   const { user, isAdmin, privileges } = useAuth();
@@ -19,7 +20,7 @@ export default function TabsLayout() {
   } = useInvitations(user);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.mainContainer}>
       <Tabs
         screenOptions={{
           tabBarStyle: {

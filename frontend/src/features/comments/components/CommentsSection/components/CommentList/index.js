@@ -4,7 +4,7 @@ import { useTheme } from '@/context/ThemeContext';
 import CommentThread from '../../../CommentThread';
 import { CommentsSectionStyles as styles } from '../../styles';
 
-export default function CommentList({ state, actions, user, isModerator, privileges }) {
+export default function CommentList({ state, actions, user, isModerator, privileges, onShare }) {
   const { colors: COLORS } = useTheme();
 
   if (state.loading) {
@@ -34,6 +34,7 @@ export default function CommentList({ state, actions, user, isModerator, privile
           onToggleDislike={actions.handleToggleDislike}
           onReply={actions.handleReplyComment}
           onDelete={actions.handleDeleteComment}
+          onShare={onShare}
         />
       ))}
     </View>

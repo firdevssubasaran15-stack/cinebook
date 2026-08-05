@@ -9,7 +9,7 @@ import CommentInputForm from './components/CommentInputForm';
 import CommentList from './components/CommentList';
 import { CommentsSectionStyles as styles } from './styles';
 
-export default function CommentsSection({ contentId }) {
+export default function CommentsSection({ contentId, onShare }) {
   const { user, isAdmin, privileges } = useAuth();
   const { colors: COLORS } = useTheme();
   
@@ -34,6 +34,7 @@ export default function CommentsSection({ contentId }) {
         user={user} 
         isModerator={isModerator} 
         privileges={privileges} 
+        onShare={onShare}
       />
     </View>
   );

@@ -12,7 +12,7 @@ export default function AuthButton({ onPress, title, gradientColors, loading = f
     >
       <LinearGradient
         colors={gradientColors}
-        className="py-4 items-center rounded-2xl"
+        style={{ paddingVertical: 16, alignItems: 'center', borderRadius: 16 }}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
       >

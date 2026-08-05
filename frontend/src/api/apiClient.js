@@ -1,5 +1,5 @@
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storageService } from '@/services/storage.service';
 import { API_BASE_URL } from '@/constants/api';
 
 const apiClient = axios.create({
@@ -13,7 +13,7 @@ const apiClient = axios.create({
 // Request interceptor — token ekle
 apiClient.interceptors.request.use(
   async (config) => {
-    const token = await AsyncStorage.getItem('cinebook_token');
+    const token = await storageService.getItem('cinebook_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -29,8 +29,8 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      await AsyncStorage.removeItem('cinebook_token');
-      await AsyncStorage.removeItem('cinebook_user');
+      await storageService.removeItem('cinebook_token');
+      await storageService.removeItem('cinebook_user');
     } else if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
       Alert.alert('Bağlantı Hatası', 'Sunucuya ulaşılamıyor (Zaman Aşımı). Lütfen aynı Wi-Fi ağında olduğunuza emin olun.');
     } else if (error.message === 'Network Error') {

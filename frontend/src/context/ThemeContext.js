@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Appearance } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storageService } from '@/services/storage.service';
 import { useColorScheme } from 'nativewind';
 import { LIGHT_COLORS, DARK_COLORS } from '@/constants/colors';
 import { useAuth } from './AuthContext';
@@ -22,19 +22,28 @@ export function ThemeProvider({ children }) {
   // Apply user preference when logged in
   useEffect(() => {
     const initTheme = async () => {
-      let activeTheme = theme;
-      if (user?.theme_preference) {
-        activeTheme = user.theme_preference;
-      } else {
-        const localTheme = await AsyncStorage.getItem('cinebook_theme');
-        if (localTheme) {
-          activeTheme = localTheme;
+      try {
+        let activeTheme = theme;
+        if (user?.theme_preference) {
+          activeTheme = user.theme_preference;
+        } else {
+          const localTheme = await storageService.getItem('cinebook_theme');
+          if (localTheme) {
+            activeTheme = localTheme;
+          }
         }
+        setTheme(activeTheme);
+        if (setColorScheme) setColorScheme(activeTheme);
+        
+        // Appearance.setColorScheme might not be available in all RN versions
+        if (Appearance && typeof Appearance.setColorScheme === 'function') {
+          Appearance.setColorScheme(activeTheme);
+        }
+      } catch (err) {
+        console.warn('Tema yuklenirken hata olustu:', err);
+      } finally {
+        setIsInitializing(false);
       }
-      setTheme(activeTheme);
-      setColorScheme(activeTheme);
-      Appearance.setColorScheme(activeTheme);
-      setIsInitializing(false);
     };
     initTheme();
   }, [user]);
@@ -44,7 +53,7 @@ export function ThemeProvider({ children }) {
     setTheme(newTheme);
     setColorScheme(newTheme);
     Appearance.setColorScheme(newTheme);
-    await AsyncStorage.setItem('cinebook_theme', newTheme);
+    await storageService.setItem('cinebook_theme', newTheme);
     
     showThemeChange(newTheme === 'dark');
     
@@ -63,9 +72,8 @@ export function ThemeProvider({ children }) {
   const colors = theme === 'dark' ? DARK_COLORS : LIGHT_COLORS;
   const isDark = theme === 'dark';
 
-  if (isInitializing) {
-    return null; // Or a splash screen
-  }
+  // Expo Router'ın Splash ekranını gizleyebilmesi için RootStack'in (children) 
+  // her halükarda render edilmesi gerekiyor. Bu yüzden return null; iptal edildi.
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, colors, isDark }}>

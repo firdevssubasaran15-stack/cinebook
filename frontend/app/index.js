@@ -2,6 +2,9 @@ import { Redirect } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { View, ActivityIndicator } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
+import { useEffect } from 'react';
 
 export default function Index() {
   const { colors: COLORS, isDark } = useTheme();
