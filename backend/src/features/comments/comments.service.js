@@ -1,6 +1,6 @@
 const commentsRepository = require('./comments.repository');
 const usersService = require('@/features/users/users.service');
-const notificationsService = require('@/features/notifications/notifications.service');
+const commentEvents = require('./comments.events');
 
 class CommentsService {
   _calculateSentiment(comment) {
@@ -40,24 +40,15 @@ class CommentsService {
     const trimmedQuote = quote ? quote.trim() : null;
 
     const result = commentsRepository.insert(userId, contentId, trimmedText, trimmedQuote, parentId);
+    const commentId = result.lastInsertRowid;
 
-    // Yanıt ise bildirim gönder
+    // Yanıt ise bildirim eventi fırlat
     if (parentId) {
       const parentComment = commentsRepository.getUserByCommentId(parentId);
-      if (parentComment && parentComment.user_id !== userId) {
-        const replier = usersService.getUsername(userId);
-        if (replier) {
-          notificationsService.createNotification(
-            parentComment.user_id,
-            'reply',
-            `@${replier.username} yorumunuza cevap verdi.`,
-            result.lastInsertRowid
-          );
-        }
-      }
+      commentEvents.emit('COMMENT_REPLIED', { parentComment, userId, commentId });
     }
 
-    const comment = commentsRepository.findByIdWithUser(result.lastInsertRowid);
+    const comment = commentsRepository.findByIdWithUser(commentId);
     return { ...comment, sentiment_score: 0, like_count: 0, dislike_count: 0 };
   }
 
@@ -120,20 +111,9 @@ class CommentsService {
       commentsRepository.deleteDislike(commentId, userId);
       commentsRepository.insertLike(commentId, userId);
       
-      // Bildirim gönder
-      if (comment.user_id !== userId) { // Kendi yorumunu beğendiyse bildirim atma
-        const liker = usersService.getUsername(userId);
-        const totalLikes = commentsRepository.getLikeCount(commentId);
-        
-        if (liker) {
-          notificationsService.createNotification(
-            comment.user_id,
-            'comment_like',
-            `@${liker.username} yorumunu beğendi. (Toplam beğeni: ${totalLikes})`,
-            commentId
-          );
-        }
-      }
+      // Bildirim event'i fırlat
+      const totalLikes = commentsRepository.getLikeCount(commentId);
+      commentEvents.emit('COMMENT_LIKED', { comment, userId, totalLikes, commentId });
 
       return { liked: true };
     }

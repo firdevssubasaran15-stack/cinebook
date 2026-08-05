@@ -1,4 +1,5 @@
 const usersService = require('@/features/users/users.service');
+const commentsService = require('@/features/comments/comments.service');
 const { successResponse, errorResponse } = require('@/shared/utils/response.helper');
 
 class UsersController {
@@ -37,8 +38,6 @@ class UsersController {
     try {
       const { id } = req.params;
       const currentUserId = req.user ? req.user.id : null;
-      // Require comments.service directly here since users.service is domain logic for users
-      const commentsService = require('@/features/comments/comments.service');
       const comments = commentsService.getByUserId(parseInt(id), currentUserId);
       return successResponse(res, comments);
     } catch (err) {
@@ -57,6 +56,10 @@ class UsersController {
     }
   }
 
+  _getProfileImagePath(file) {
+    return `/uploads/profiles/${file.filename}`;
+  }
+
   updateProfileImage(req, res) {
     try {
       if (!req.file) {
@@ -64,7 +67,7 @@ class UsersController {
       }
       
       const currentUserId = req.user.id;
-      const imagePath = `/uploads/profiles/${req.file.filename}`;
+      const imagePath = this._getProfileImagePath(req.file);
       
       const updatedUser = usersService.updateProfileImage(currentUserId, imagePath);
       

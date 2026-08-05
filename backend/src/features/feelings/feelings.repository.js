@@ -8,7 +8,8 @@ class FeelingsRepository {
         u.username,
         u.profile_image,
         (SELECT COUNT(*) FROM feeling_likes WHERE feeling_id = f.id) as like_count,
-        (SELECT COUNT(*) FROM feeling_likes WHERE feeling_id = f.id AND user_id = ?) as is_liked_by_user
+        (SELECT COUNT(*) FROM feeling_likes WHERE feeling_id = f.id AND user_id = ?) as is_liked_by_user,
+        (SELECT GROUP_CONCAT(tag, ',') FROM feeling_tags WHERE feeling_id = f.id) as tags_string
       FROM feelings f
       JOIN users u ON f.user_id = u.id
       WHERE f.content_id = ?
@@ -22,7 +23,8 @@ class FeelingsRepository {
 
   findByTag(tag, contentType = null) {
     let query = `
-      SELECT DISTINCT f.*, u.username, u.profile_image, c.title, c.type, c.cover_image
+      SELECT DISTINCT f.*, u.username, u.profile_image, c.title, c.type, c.cover_image,
+        (SELECT GROUP_CONCAT(tag, ',') FROM feeling_tags WHERE feeling_id = f.id) as tags_string
       FROM feelings f
       JOIN users u ON f.user_id = u.id
       JOIN content c ON f.content_id = c.id
@@ -56,7 +58,9 @@ class FeelingsRepository {
 
   findByIdWithUser(feelingId) {
     return dbGet(`
-      SELECT f.*, u.username, u.profile_image FROM feelings f
+      SELECT f.*, u.username, u.profile_image,
+        (SELECT GROUP_CONCAT(tag, ',') FROM feeling_tags WHERE feeling_id = f.id) as tags_string
+      FROM feelings f
       JOIN users u ON f.user_id = u.id
       WHERE f.id = ?
     `, [feelingId]);

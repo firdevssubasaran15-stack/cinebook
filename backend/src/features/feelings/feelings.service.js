@@ -3,13 +3,16 @@ const { VALID_TAGS } = require('./feelings.constants');
 const usersService = require('@/features/users/users.service');
 
 class FeelingsService {
+  _mapFeelingTags(feeling) {
+    const tags = feeling.tags_string ? feeling.tags_string.split(',') : [];
+    // tags_string property'sini temizleyip temiz tags dizisini dönüyoruz
+    delete feeling.tags_string;
+    return { ...feeling, tags };
+  }
+
   getByContentId(contentId, currentUserId = null) {
     const feelings = feelingsRepository.findByContentId(contentId, currentUserId || -1);
-
-    return feelings.map((feeling) => ({
-      ...feeling,
-      tags: feelingsRepository.findTagsByFeelingId(feeling.id).map((t) => t.tag),
-    }));
+    return feelings.map((f) => this._mapFeelingTags(f));
   }
 
   searchByTag(tag, contentType = null) {
@@ -18,11 +21,7 @@ class FeelingsService {
     }
 
     const feelings = feelingsRepository.findByTag(tag, contentType);
-    
-    return feelings.map((feeling) => ({
-      ...feeling,
-      tags: feelingsRepository.findTagsByFeelingId(feeling.id).map((t) => t.tag),
-    }));
+    return feelings.map((f) => this._mapFeelingTags(f));
   }
 
   create(userId, contentId, text, tags = []) {
@@ -46,11 +45,7 @@ class FeelingsService {
     feelingsRepository.insertTags(feelingId, tags);
 
     const feeling = feelingsRepository.findByIdWithUser(feelingId);
-
-    return {
-      ...feeling,
-      tags: feelingsRepository.findTagsByFeelingId(feelingId).map((t) => t.tag),
-    };
+    return this._mapFeelingTags(feeling);
   }
 
   delete(feelingId, userId, isAdmin) {
@@ -94,11 +89,7 @@ class FeelingsService {
     feelingsRepository.insertTags(feelingId, tags);
 
     const updatedFeeling = feelingsRepository.findByIdWithUser(feelingId);
-
-    return {
-      ...updatedFeeling,
-      tags: feelingsRepository.findTagsByFeelingId(feelingId).map((t) => t.tag),
-    };
+    return this._mapFeelingTags(updatedFeeling);
   }
 
   toggleLike(feelingId, userId) {

@@ -1,7 +1,8 @@
 const usersRepository = require('./users.repository');
 const similarityService = require('./similarity.service');
-const notificationsService = require('@/features/notifications/notifications.service');
 const feelingsRepository = require('@/features/feelings/feelings.repository');
+const usersEvents = require('./users.events');
+const usersValidator = require('./users.validator');
 
 class UsersService {
   getProfile(userId, currentUserId = null) {
@@ -50,15 +51,14 @@ class UsersService {
     } else {
       usersRepository.insertFollow(followerId, followingId);
       
-      // Bildirim gönder
+      // Bildirim event'ini fırlat (Observer)
       const follower = usersRepository.getUsername(followerId);
       if (follower) {
-        notificationsService.createNotification(
+        usersEvents.emit('USER_FOLLOWED', {
+          followerId,
           followingId,
-          'follow',
-          `@${follower.username} seni takip etmeye başladı.`,
-          followerId
-        );
+          followerUsername: follower.username
+        });
       }
 
       return { following: true };
@@ -79,15 +79,7 @@ class UsersService {
   }
 
   updateUsername(userId, newUsername) {
-    if (!newUsername || newUsername.trim().length < 3 || newUsername.trim().length > 20) {
-      throw new Error('Kullanıcı adı 3 ile 20 karakter arasında olmalıdır.');
-    }
-    
-    const sanitizedUsername = newUsername.trim().toLowerCase();
-    
-    if (!/^[a-z0-9_]+$/.test(sanitizedUsername)) {
-      throw new Error('Kullanıcı adı sadece küçük harf, rakam ve alt çizgi içerebilir.');
-    }
+    const sanitizedUsername = usersValidator.validateUsername(newUsername);
 
     const existingUser = usersRepository.findByUsername(sanitizedUsername);
     if (existingUser && existingUser.id !== userId) {
@@ -116,10 +108,7 @@ class UsersService {
     return usersRepository.getUserAuthProfile(userId);
   }
 
-  getTopEmotions(userId, limit = 5) {
-    const rows = feelingsRepository.getUserTopEmotions(userId, limit);
-    
-    // If the user has fewer than 5 emotions, fill the rest with generic popular ones
+  _padEmotions(rows, limit) {
     const genericEmotions = ['mutluluk', 'huzur', 'heyecan', 'sevgi', 'umut', 'merak'];
     const tags = rows.map(r => r.tag);
     
@@ -133,6 +122,11 @@ class UsersService {
     }
     
     return tags;
+  }
+
+  getTopEmotions(userId, limit = 5) {
+    const rows = feelingsRepository.getUserTopEmotions(userId, limit);
+    return this._padEmotions(rows, limit);
   }
 
   getUserPrivileges(userId) {

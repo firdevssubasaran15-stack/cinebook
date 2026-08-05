@@ -1,5 +1,12 @@
 const { dbQuery, dbGet, dbRun } = require('@/database/db');
 
+const STATS_SELECT = `
+  (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as like_count,
+  (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id AND user_id = ?) as is_liked_by_user,
+  (SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = c.id) as dislike_count,
+  (SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = c.id AND user_id = ?) as is_disliked_by_user
+`;
+
 class CommentsRepository {
   findByContentId(contentId, currentUserId) {
     return dbQuery(`
@@ -7,10 +14,7 @@ class CommentsRepository {
         c.*, 
         u.username,
         u.profile_image,
-        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as like_count,
-        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id AND user_id = ?) as is_liked_by_user,
-        (SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = c.id) as dislike_count,
-        (SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = c.id AND user_id = ?) as is_disliked_by_user
+        ${STATS_SELECT}
       FROM comments c
       JOIN users u ON c.user_id = u.id
       WHERE c.content_id = ?
@@ -27,10 +31,7 @@ class CommentsRepository {
         ct.title as content_title,
         ct.type as content_type,
         ct.cover_image as content_cover_image,
-        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as like_count,
-        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id AND user_id = ?) as is_liked_by_user,
-        (SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = c.id) as dislike_count,
-        (SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = c.id AND user_id = ?) as is_disliked_by_user
+        ${STATS_SELECT}
       FROM comments c
       JOIN users u ON c.user_id = u.id
       JOIN content ct ON c.content_id = ct.id
@@ -48,10 +49,7 @@ class CommentsRepository {
         ct.title as content_title,
         ct.type as content_type,
         ct.cover_image as content_cover_image,
-        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id) as like_count,
-        (SELECT COUNT(*) FROM comment_likes WHERE comment_id = c.id AND user_id = ?) as is_liked_by_user,
-        (SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = c.id) as dislike_count,
-        (SELECT COUNT(*) FROM comment_dislikes WHERE comment_id = c.id AND user_id = ?) as is_disliked_by_user
+        ${STATS_SELECT}
       FROM comments c
       JOIN users u ON c.user_id = u.id
       JOIN content ct ON c.content_id = ct.id

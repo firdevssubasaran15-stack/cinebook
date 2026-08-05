@@ -55,15 +55,14 @@ class ContentController {
     }
   }
 
+  _getCoverImagePath(file) {
+    return file ? `/uploads/${file.filename}` : null;
+  }
+
   create(req, res) {
     try {
       const { type, title, director_author, summary } = req.body;
-      let cover_image = null;
-      
-      if (req.file) {
-        // Validation is now handled by image-validator.middleware.js
-        cover_image = `/uploads/${req.file.filename}`;
-      }
+      const cover_image = this._getCoverImagePath(req.file);
 
       const data = contentService.create({ type, title, director_author, summary, cover_image });
       return successResponse(res, data, 'İçerik başarıyla eklendi.', 201);
@@ -75,12 +74,8 @@ class ContentController {
   update(req, res) {
     try {
       const { title, director_author, summary } = req.body;
-      let cover_image = undefined;
-      
-      if (req.file) {
-        // Validation is now handled by image-validator.middleware.js
-        cover_image = `/uploads/${req.file.filename}`;
-      }
+      // update işleminde dosya gönderilmemişse mevcut resim korunmalıdır (undefined)
+      const cover_image = req.file ? this._getCoverImagePath(req.file) : undefined;
 
       const data = contentService.update(parseInt(req.params.id), { title, director_author, summary, cover_image });
       return successResponse(res, data, 'İçerik başarıyla güncellendi.');
