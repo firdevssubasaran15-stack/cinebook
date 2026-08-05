@@ -74,14 +74,19 @@ export const useAddContent = (onSuccess) => {
       formData.append('summary', summary.trim());
 
       if (coverImage) {
-        const filename = coverImage.uri.split('/').pop();
-        let ext = filename.split('.').pop().toLowerCase();
-        if (ext === 'jpg') ext = 'jpeg';
+        const filename = coverImage.fileName || coverImage.uri.split('/').pop();
+        
+        let mimeType = coverImage.mimeType;
+        if (!mimeType) {
+          let ext = filename.split('.').pop().toLowerCase();
+          if (ext === 'jpg') ext = 'jpeg';
+          mimeType = `image/${ext}`;
+        }
         
         formData.append('cover_image', {
           uri: coverImage.uri,
           name: filename,
-          type: `image/${ext}`,
+          type: mimeType,
         });
       }
 

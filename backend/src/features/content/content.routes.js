@@ -51,9 +51,13 @@ router.post('/', authenticateToken, requireAdmin, upload.single('cover_image'), 
 );
 
 // PUT /api/content/:id — Sadece admin
-router.put('/:id', authenticateToken, requireAdmin, upload.single('cover_image'), (req, res) =>
-  contentController.update(req, res)
-);
+router.put('/:id', authenticateToken, requireAdmin, upload.single('cover_image'), (req, res) => {
+  console.log('--- UPLOAD DEBUG ---');
+  console.log('req.body:', req.body);
+  console.log('req.file:', req.file);
+  console.log('--------------------');
+  return contentController.update(req, res);
+});
 
 // DELETE /api/content/:id — Sadece admin
 router.delete('/:id', authenticateToken, requireAdmin, (req, res) =>

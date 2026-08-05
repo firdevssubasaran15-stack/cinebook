@@ -28,7 +28,7 @@ export default function ContentCover({
       ) : coverUri ? (
         <Image 
           source={{ uri: coverUri }} 
-          className={styles.coverImage} 
+          style={{ width: '100%', height: '100%', position: 'absolute' }}
           contentFit="cover" 
         />
       ) : (

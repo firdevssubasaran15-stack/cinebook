@@ -103,14 +103,20 @@ export function useContentDetail(id, navigation) {
       formData.append('director_author', d);
       formData.append('summary', editSummary.trim());
       if (editCover) {
-        const filename = editCover.uri.split('/').pop();
-        let ext = filename.split('.').pop().toLowerCase();
-        if (ext === 'jpg') ext = 'jpeg';
+        const filename = editCover.fileName || editCover.uri.split('/').pop();
+        
+        // Eğer ImagePicker mimeType veriyorsa onu kullan, yoksa uzantıdan bul (örn: image/jpeg)
+        let mimeType = editCover.mimeType;
+        if (!mimeType) {
+          let ext = filename.split('.').pop().toLowerCase();
+          if (ext === 'jpg') ext = 'jpeg';
+          mimeType = `image/${ext}`;
+        }
         
         formData.append('cover_image', {
           uri: editCover.uri,
           name: filename,
-          type: `image/${ext}`,
+          type: mimeType,
         });
       }
       await contentApi.update(id, formData);
