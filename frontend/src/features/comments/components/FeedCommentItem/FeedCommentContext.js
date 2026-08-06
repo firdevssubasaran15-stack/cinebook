@@ -4,9 +4,11 @@ import { Image } from 'expo-image';
 import Icon from '@/features/icon/components/Icon';
 import { API_BASE_URL } from '@/constants/api';
 import { useTheme } from '@/context/ThemeContext';
+import { useContentTypeLabel } from '@/features/content/hooks/useContentTypeLabel';
 
 export default function FeedCommentContext({ comment, onPressContent, themeColor }) {
   const { colors: COLORS } = useTheme();
+  const { getContentTypeLabel } = useContentTypeLabel();
 
   return (
     <TouchableOpacity 
@@ -32,7 +34,7 @@ export default function FeedCommentContext({ comment, onPressContent, themeColor
           {comment.content_title}
         </Text>
         <Text className="text-[11px] text-text-lightSecondary dark:text-text-darkSecondary">
-          {comment.content_type === 'movie' ? '🎬 Film' : comment.content_type === 'series' ? '📺 Dizi' : '📚 Kitap'}
+          {getContentTypeLabel(comment.content_type)}
         </Text>
       </View>
       <Icon name="ArrowRight" size={20} color={COLORS.textSecondary} />

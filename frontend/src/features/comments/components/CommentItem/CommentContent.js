@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Icon from '@/features/icon/components/Icon';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function CommentContent({ comment, isFeeling }) {
   const { colors: COLORS } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -16,7 +18,7 @@ export default function CommentContent({ comment, isFeeling }) {
           </Text>
         </View>
       )}
-      
+
       {comment.text ? (
         <Text className="text-[15px] leading-6 text-text-lightPrimary dark:text-text-darkPrimary">
           {comment.replyingTo && (
@@ -36,8 +38,11 @@ export default function CommentContent({ comment, isFeeling }) {
               className="px-2.5 py-1 rounded-full border border-light-border/50 dark:border-dark-border/50"
               style={{ backgroundColor: `${COLORS[tag] || COLORS.textPrimary}30` }}
             >
-              <Text className="text-[11px] font-bold tracking-wide uppercase" style={{ color: COLORS[tag] || COLORS.textPrimary }}>
-                {tag}
+              <Text
+                className="text-[11px] font-bold tracking-wide uppercase"
+                style={{ color: COLORS[tag] || COLORS.textPrimary }}
+              >
+                {t(`emotionDiscovery.${tag}`, { defaultValue: tag })}
               </Text>
             </View>
           ))}
@@ -46,3 +51,4 @@ export default function CommentContent({ comment, isFeeling }) {
     </>
   );
 }
+

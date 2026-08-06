@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import en from './en.json';
 import tr from './tr.json';
 import es from './es.json';
+import fr from './fr.json';
 
 const LANGUAGE_KEY = '@app_language';
 
@@ -12,6 +13,7 @@ const resources = {
   en: { translation: en },
   tr: { translation: tr },
   es: { translation: es },
+  fr: { translation: fr },
 };
 
 const languageDetector = {

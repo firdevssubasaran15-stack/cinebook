@@ -13,7 +13,7 @@ commentEvents.on('COMMENT_REPLIED', ({ parentComment, userId, commentId }) => {
       notificationsService.createNotification(
         parentComment.user_id,
         'reply',
-        `@${replier.username} yorumunuza cevap verdi.`,
+        JSON.stringify({ key: 'notifications.reply', username: `@${replier.username}` }),
         commentId
       );
     }
@@ -28,7 +28,7 @@ commentEvents.on('COMMENT_LIKED', ({ comment, userId, totalLikes, commentId }) =
       notificationsService.createNotification(
         comment.user_id,
         'comment_like',
-        `@${liker.username} yorumunu beğendi. (Toplam beğeni: ${totalLikes})`,
+        JSON.stringify({ key: 'notifications.comment_liked', username: `@${liker.username}`, count: totalLikes }),
         commentId
       );
     }

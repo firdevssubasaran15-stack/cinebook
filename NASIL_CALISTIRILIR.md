@@ -61,7 +61,7 @@ npm install
 # 3. Uygulamayı başlat
 npx expo start -c
 REACT_NATIVE_PACKAGER_HOSTNAME=192.168.1.163 npx expo start --lan -c
-REACT_NATIVE_PACKAGER_HOSTNAME=192.168.1.163 npx expo start -c
+
 
 ```
 
@@ -69,7 +69,7 @@ REACT_NATIVE_PACKAGER_HOSTNAME=192.168.1.163 npx expo start -c
 > Expo Go uygulaması, `localhost` adresine erişemez.
 > `frontend/src/constants/api.js` dosyasındaki `API_BASE_URL` değerini
 > bilgisayarınızın yerel ağ IP adresiyle güncellemeniz gerekir.
-
+REACT_NATIVE_PACKAGER_HOSTNAME=192.168.1.163 npx expo start -c
 ```js
 // frontend/src/constants/api.js — Bu satırı düzenleyin:
 export const API_BASE_URL = 'http://192.168.1.XXX:3000';

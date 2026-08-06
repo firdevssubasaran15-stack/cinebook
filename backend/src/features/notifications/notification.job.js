@@ -49,9 +49,7 @@ class NotificationJob {
     const suggestedQuote = notificationJobRepository.getSuggestedQuote(user.id, topEmotion.tag);
 
     if (suggestedQuote) {
-      // Duygu etiketlerini kullanıcı dostu hale getir
-      const duygu = topEmotion.tag.replace('_', ' '); 
-      const message = `Geçen haftaki yoğun '${duygu}' duyguna özel tavsiye! @${suggestedQuote.username} kişisinden '${suggestedQuote.title}' için bir alıntı: "${suggestedQuote.quote}"`;
+      const message = JSON.stringify({ key: 'notifications.system_quote', username: `@${suggestedQuote.username}`, title: suggestedQuote.title, quote: suggestedQuote.quote });
       
       notificationsService.createNotification(
         user.id,

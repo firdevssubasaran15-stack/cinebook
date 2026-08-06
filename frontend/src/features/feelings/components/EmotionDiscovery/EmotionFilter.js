@@ -1,15 +1,17 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import Icon from '@/features/icon/components/Icon';
 
 export default function EmotionFilter({ displayedEmotions, selectedTag, onSelectTag }) {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <View className="pl-4 mb-4">
       <Text className="text-sm font-bold text-text-lightSecondary dark:text-text-darkSecondary uppercase tracking-wider mb-2.5">
-        Duyguyla Keşfet
+        {t('emotionDiscovery.title')}
       </Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View className="flex-row gap-2">
@@ -36,7 +38,7 @@ export default function EmotionFilter({ displayedEmotions, selectedTag, onSelect
                   className={`text-[13px] ${isSelected ? 'font-bold' : 'font-medium text-text-lightPrimary dark:text-text-darkPrimary'}`} 
                   style={isSelected ? { color: tagColor } : undefined}
                 >
-                  {tag.label}
+                  {t(`emotionDiscovery.${tag.id}`, tag.label)}
                 </Text>
               </TouchableOpacity>
             );

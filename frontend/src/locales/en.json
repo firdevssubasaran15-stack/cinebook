@@ -36,7 +36,9 @@
     "language": {
       "title": "Language",
       "english": "English",
-      "turkish": "Turkish"
+      "turkish": "Turkish",
+      "spanish": "Spanish",
+      "french": "French"
     },
     "notificationsTitle": "Notifications",
     "notificationInterval": "Notification Interval",
@@ -56,6 +58,62 @@
     "library": "Library",
     "notifications": "Notifications",
     "admin": "Admin"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "You have no notifications.",
+    "comment_liked": "{{username}} liked your comment. (Total likes: {{count}})",
+    "reply": "{{username}} replied to your comment.",
+    "follow": "{{username}} started following you.",
+    "system_quote": "Special quote recommendation based on your recent emotions!"
+  },
+  "contentTypes": {
+    "movie": "🎦 Movie",
+    "series": "📺 Series",
+    "book": "📚 Book"
+  },
+  "contentSearch": {
+    "moviePlaceholder": "Search movies...",
+    "seriesPlaceholder": "Search series...",
+    "bookPlaceholder": "Search books...",
+    "noMovies": "No movies added yet.",
+    "noSeries": "No series added yet.",
+    "noBooks": "No books added yet.",
+    "noResults": "No results found for \"{{query}}\"."
+  },
+  "emotionDiscovery": {
+    "title": "Discover by Emotion",
+    "mutluluk": "Joy",
+    "heyecan": "Excitement",
+    "yalnizlik": "Loneliness",
+    "uzuntu": "Sadness",
+    "korku": "Fear",
+    "ofke": "Anger",
+    "saskinlik": "Surprise",
+    "tiksinme": "Disgust",
+    "huzur": "Peace",
+    "minnettarlik": "Gratitude",
+    "sevgi": "Love",
+    "sefkat": "Compassion",
+    "umut": "Hope",
+    "merak": "Curiosity",
+    "ilham": "Inspiration",
+    "kaygi": "Anxiety",
+    "pismanlik": "Regret",
+    "bikkinlik": "Weariness",
+    "umutsuzluk": "Despair",
+    "nostalji": "Nostalgia",
+    "melankoli": "Melancholy",
+    "ozlem": "Longing",
+    "aitlik": "Belonging",
+    "yabancilasma": "Alienation",
+    "tukenmislik": "Burnout",
+    "hissizlik": "Numbness",
+    "kafa_karisikligi": "Confusion",
+    "mahcubiyet": "Embarrassment",
+    "guvende_hissetme": "Safety",
+    "suphe": "Doubt",
+    "tedirginlik": "Unease"
   },
   "userProfile": {
     "joinDate": "Joined:",
@@ -155,6 +213,8 @@
     "doNotShowToday": "Do not show again today"
   },
   "homeFeed": {
+    "greeting": "Hello, {{username}} 👋",
+    "discoverPrompt": "What would you like to discover today?",
     "recentComments": "Recent Comments",
     "empty": "No comments yet."
   },
@@ -227,5 +287,32 @@
     "newReadList": "New Read List",
     "listNamePlaceholder": "List Name",
     "createBtn": "Create"
+  },
+  "calendar": {
+    "title": "Consumption History",
+    "consumptions": "Consumptions",
+    "monthNames": ["January","February","March","April","May","June","July","August","September","October","November","December"],
+    "monthNamesShort": ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    "dayNames": ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+    "dayNamesShort": ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
+    "today": "Today"
+  },
+  "contentDetail": {
+    "loadError": "Failed to load content.",
+    "deleteTitle": "Delete Content",
+    "deleteMessage": "Are you sure you want to permanently delete this content? All comments and feelings will also be deleted. This action cannot be undone.",
+    "deleteCancel": "Cancel",
+    "deleteConfirm": "Delete",
+    "deleteSuccess": "Content deleted successfully.",
+    "deleteError": "Failed to delete content.",
+    "imageCancelled": "Image selection cancelled.",
+    "imageError": "An error occurred while selecting the image.",
+    "validationError": "Title and author/director are required.",
+    "saveSuccess": "Content updated successfully.",
+    "saveError": "Failed to update content.",
+    "warningTitle": "Warning",
+    "errorTitle": "Error",
+    "successTitle": "Success",
+    "infoTitle": "Info"
   }
 }

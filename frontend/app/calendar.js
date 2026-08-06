@@ -1,34 +1,30 @@
-import React from 'react';
+﻿import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { Calendar } from 'react-native-calendars';
 import { useTheme } from '@/context/ThemeContext';
 import Icon from '@/features/icon/components/Icon';
 import { useCalendar } from '@/features/calendar/hooks/useCalendar';
+import { useCalendarLocale } from '@/features/calendar/hooks/useCalendarLocale';
 import { calendarStyles as styles } from '@/features/calendar/styles/calendar.styles';
-
 import CalendarDay from '@/features/calendar/components/CalendarDay';
 import CalendarDetailModal from '@/features/calendar/components/CalendarDetailModal';
 
-LocaleConfig.locales['tr'] = {
-  monthNames: ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],
-  monthNamesShort: ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'],
-  dayNames: ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'],
-  dayNamesShort: ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'],
-  today: 'Bugün'
-};
-LocaleConfig.defaultLocale = 'tr';
-
 export default function CalendarScreen() {
+  const { t } = useTranslation();
   const { colors: COLORS } = useTheme();
-  
+
+  // SRP: Takvim locale yonetimi ayri hook'ta — dil degisince otomatik guncellenir
+  useCalendarLocale();
+
   const {
     history,
     loading,
     selectedDate,
     showModal,
     setShowModal,
-    onDayPress
+    onDayPress,
   } = useCalendar();
 
   if (loading) {
@@ -45,7 +41,7 @@ export default function CalendarScreen() {
         <TouchableOpacity onPress={() => router.back()} className={styles.backButton}>
           <Icon name="CaretLeft" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text className={styles.headerTitle}>Tüketim Geçmişi</Text>
+        <Text className={styles.headerTitle}>{t('calendar.title')}</Text>
         <View className={styles.headerSpacer} />
       </View>
 
@@ -68,7 +64,7 @@ export default function CalendarScreen() {
         />
       </ScrollView>
 
-      <CalendarDetailModal 
+      <CalendarDetailModal
         visible={showModal}
         onClose={() => setShowModal(false)}
         selectedDate={selectedDate}

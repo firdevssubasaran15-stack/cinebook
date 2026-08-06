@@ -58,6 +58,62 @@
     "notifications": "Notificaciones",
     "admin": "Admin"
   },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty": "No tienes notificaciones.",
+    "comment_liked": "{{username}} le gustó tu comentario. (Total: {{count}})",
+    "reply": "{{username}} respondió a tu comentario.",
+    "follow": "{{username}} empezó a seguirte.",
+    "system_quote": "¡Recomendación especial basada en tus emociones recientes!"
+  },
+  "contentTypes": {
+    "movie": "🎦 Película",
+    "series": "📺 Serie",
+    "book": "📚 Libro"
+  },
+  "contentSearch": {
+    "moviePlaceholder": "Buscar películas...",
+    "seriesPlaceholder": "Buscar series...",
+    "bookPlaceholder": "Buscar libros...",
+    "noMovies": "Aún no se han añadido películas.",
+    "noSeries": "Aún no se han añadido series.",
+    "noBooks": "Aún no se han añadido libros.",
+    "noResults": "No se encontraron resultados para \"{{query}}\"."
+  },
+  "emotionDiscovery": {
+    "title": "Descubrir por Emoción",
+    "mutluluk": "Alegría",
+    "heyecan": "Emoción",
+    "yalnizlik": "Soledad",
+    "uzuntu": "Tristeza",
+    "korku": "Miedo",
+    "ofke": "Ira",
+    "saskinlik": "Sorpresa",
+    "tiksinme": "Asco",
+    "huzur": "Paz",
+    "minnettarlik": "Gratitud",
+    "sevgi": "Amor",
+    "sefkat": "Compasión",
+    "umut": "Esperanza",
+    "merak": "Curiosidad",
+    "ilham": "Inspiración",
+    "kaygi": "Ansiedad",
+    "pismanlik": "Arrepentimiento",
+    "bikkinlik": "Agotamiento",
+    "umutsuzluk": "Desesperación",
+    "nostalji": "Nostalgia",
+    "melankoli": "Melancolía",
+    "ozlem": "Añoranza",
+    "aitlik": "Pertenencia",
+    "yabancilasma": "Alienación",
+    "tukenmislik": "Agotamiento",
+    "hissizlik": "Entumecimiento",
+    "kafa_karisikligi": "Confusión",
+    "mahcubiyet": "Vergüenza",
+    "guvende_hissetme": "Seguridad",
+    "suphe": "Duda",
+    "tedirginlik": "Inquietud"
+  },
   "userProfile": {
     "joinDate": "Se unió:",
     "follower": "Seguidor",
@@ -156,6 +212,8 @@
     "doNotShowToday": "No mostrar de nuevo hoy"
   },
   "homeFeed": {
+    "greeting": "Hola, {{username}} 👋",
+    "discoverPrompt": "¿Qué te gustaría descubrir hoy?",
     "recentComments": "Comentarios recientes",
     "empty": "Sin comentarios aún."
   },
@@ -228,5 +286,32 @@
     "newReadList": "Nueva Lista de Libros",
     "listNamePlaceholder": "Nombre de Lista",
     "createBtn": "Crear"
+  },
+  "calendar": {
+    "title": "Historial de Consumo",
+    "consumptions": "Consumiciones",
+    "monthNames": ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
+    "monthNamesShort": ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"],
+    "dayNames": ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"],
+    "dayNamesShort": ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"],
+    "today": "Hoy"
+  },
+  "contentDetail": {
+    "loadError": "No se pudo cargar el contenido.",
+    "deleteTitle": "Eliminar Contenido",
+    "deleteMessage": "¿Estás seguro de que deseas eliminar este contenido permanentemente? Todos los comentarios y sentimientos también serán eliminados. Esta acción no se puede deshacer.",
+    "deleteCancel": "Cancelar",
+    "deleteConfirm": "Eliminar",
+    "deleteSuccess": "Contenido eliminado exitosamente.",
+    "deleteError": "No se pudo eliminar el contenido.",
+    "imageCancelled": "Selección de imagen cancelada.",
+    "imageError": "Ocurrió un error al seleccionar la imagen.",
+    "validationError": "El título y el autor/director son obligatorios.",
+    "saveSuccess": "Contenido actualizado exitosamente.",
+    "saveError": "No se pudo actualizar el contenido.",
+    "warningTitle": "Advertencia",
+    "errorTitle": "Error",
+    "successTitle": "Éxito",
+    "infoTitle": "Información"
   }
 }

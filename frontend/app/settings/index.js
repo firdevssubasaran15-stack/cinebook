@@ -7,11 +7,12 @@ import Icon from '@/features/icon/components/Icon';
 import { useSettings } from '@/features/settings/hooks/useSettings';
 import { getSettingsStyles } from '@/features/settings/styles/settings.styles';
 import { useLanguage } from '@/hooks/useLanguage';
+import LanguageSelector from '@/features/settings/components/LanguageSelector';
 
 export default function SettingsScreen() {
   const { user, logout, updateUser } = useAuth();
   const { colors: COLORS, toggleTheme, isDark } = useTheme();
-  const { currentLanguage, toggleLanguage, t } = useLanguage();
+  const { currentLanguage, changeLanguage, t } = useLanguage();
   
   const {
     handleToggleNotifications,
@@ -84,21 +85,13 @@ export default function SettingsScreen() {
           </Text>
         </TouchableOpacity>
 
-        {/* Dil Değiştir (Language Toggle) */}
-        <View style={styles.notificationToggleRow}>
-          <View style={styles.settingLabelRow}>
-            <Icon name="Globe" size={22} color={COLORS.textSecondary} />
-            <Text style={styles.settingLabel}>
-              {t('settings.language.title')} ({currentLanguage === 'en' ? t('settings.language.english') : t('settings.language.turkish')})
-            </Text>
-          </View>
-          <Switch
-            value={currentLanguage === 'tr'}
-            onValueChange={toggleLanguage}
-            trackColor={{ false: COLORS.border, true: COLORS.primary }}
-            thumbColor={'#fff'}
-          />
-        </View>
+        {/* Dil Değiştir (Language Selector) */}
+        <LanguageSelector 
+          currentLanguage={currentLanguage}
+          changeLanguage={changeLanguage}
+          COLORS={COLORS}
+          t={t}
+        />
 
         {/* Çıkış Yap */}
         <TouchableOpacity

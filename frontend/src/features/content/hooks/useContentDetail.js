@@ -1,19 +1,28 @@
-import { useState, useCallback, useEffect } from 'react';
+﻿import { useState, useCallback, useEffect } from 'react';
 import { Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { useTranslation } from 'react-i18next';
 import { contentApi } from '@/api/endpoints/content.api';
 import { router } from 'expo-router';
 
+/**
+ * useContentDetail
+ *
+ * Icerik detay ekrani is mantigini yonetir.
+ * SOLID SRP: Alert metinleri i18n locale dosyasinda,
+ * hook yalnizca is akisi ve state yonetiminden sorumludur.
+ */
 export function useContentDetail(id, navigation) {
-  const [content, setContent] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState('');
-  const [editAuthor, setEditAuthor] = useState('');
-  const [editSummary, setEditSummary] = useState('');
-  const [editCover, setEditCover] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const [content, setContent]               = useState(null);
+  const [loading, setLoading]               = useState(true);
+  const [isEditing, setIsEditing]           = useState(false);
+  const [editTitle, setEditTitle]           = useState('');
+  const [editAuthor, setEditAuthor]         = useState('');
+  const [editSummary, setEditSummary]       = useState('');
+  const [editCover, setEditCover]           = useState(null);
+  const [saving, setSaving]                 = useState(false);
   const [isPickingImage, setIsPickingImage] = useState(false);
 
   const fetchContent = useCallback(async () => {
@@ -25,33 +34,35 @@ export function useContentDetail(id, navigation) {
         navigation.setOptions({ title: res.data.data.title });
       }
     } catch (err) {
-      Alert.alert('Hata', 'İçerik yüklenemedi.');
+      Alert.alert(t('contentDetail.errorTitle'), t('contentDetail.loadError'));
     } finally {
       setLoading(false);
     }
-  }, [id, navigation]);
+  }, [id, navigation, t]);
 
-  
   useEffect(() => {
     fetchContent();
   }, [fetchContent]);
 
   const handleDeleteContent = () => {
     Alert.alert(
-      'İçeriği Sil',
-      'Bu içeriği (film/dizi/kitap) tamamen silmek istediğinize emin misiniz? Bütün yorumlar ve hisler de silinecektir. Bu işlem geri alınamaz.',
+      t('contentDetail.deleteTitle'),
+      t('contentDetail.deleteMessage'),
       [
-        { text: 'İptal', style: 'cancel' },
+        { text: t('contentDetail.deleteCancel'), style: 'cancel' },
         {
-          text: 'Sil',
+          text: t('contentDetail.deleteConfirm'),
           style: 'destructive',
           onPress: async () => {
             try {
               await contentApi.delete(id);
-              Alert.alert('Başarılı', 'İçerik başarıyla silindi.');
+              Alert.alert(t('contentDetail.successTitle'), t('contentDetail.deleteSuccess'));
               router.back();
             } catch (err) {
-              Alert.alert('Hata', err.response?.data?.message || 'İçerik silinemedi.');
+              Alert.alert(
+                t('contentDetail.errorTitle'),
+                err.response?.data?.message || t('contentDetail.deleteError')
+              );
             }
           },
         },
@@ -78,53 +89,49 @@ export function useContentDetail(id, navigation) {
         quality: 0.8,
       });
       if (result.canceled) {
-        Alert.alert('Bilgi', 'Resim seçimi iptal edildi.');
+        Alert.alert(t('contentDetail.infoTitle'), t('contentDetail.imageCancelled'));
         return;
       }
       setEditCover(result.assets[0]);
     } catch (error) {
-      Alert.alert('Hata', 'Resim seçilirken bir hata oluştu.');
+      Alert.alert(t('contentDetail.errorTitle'), t('contentDetail.imageError'));
     } finally {
       setIsPickingImage(false);
     }
   };
 
   const handleSaveEdit = async () => {
-    const t = editTitle.trim();
-    const d = editAuthor.trim();
-    if (!t || !d) {
-      Alert.alert('Uyarı', 'Başlık ve yazar/yönetmen zorunludur.');
+    const title  = editTitle.trim();
+    const author = editAuthor.trim();
+    if (!title || !author) {
+      Alert.alert(t('contentDetail.warningTitle'), t('contentDetail.validationError'));
       return;
     }
     setSaving(true);
     try {
       const formData = new FormData();
-      formData.append('title', t);
-      formData.append('director_author', d);
+      formData.append('title', title);
+      formData.append('director_author', author);
       formData.append('summary', editSummary.trim());
       if (editCover) {
         const filename = editCover.fileName || editCover.uri.split('/').pop();
-        
-        // Eğer ImagePicker mimeType veriyorsa onu kullan, yoksa uzantıdan bul (örn: image/jpeg)
         let mimeType = editCover.mimeType;
         if (!mimeType) {
           let ext = filename.split('.').pop().toLowerCase();
           if (ext === 'jpg') ext = 'jpeg';
           mimeType = `image/${ext}`;
         }
-        
-        formData.append('cover_image', {
-          uri: editCover.uri,
-          name: filename,
-          type: mimeType,
-        });
+        formData.append('cover_image', { uri: editCover.uri, name: filename, type: mimeType });
       }
       await contentApi.update(id, formData);
-      Alert.alert('Başarılı', 'İçerik başarıyla güncellendi.');
+      Alert.alert(t('contentDetail.successTitle'), t('contentDetail.saveSuccess'));
       setIsEditing(false);
       fetchContent();
     } catch (err) {
-      Alert.alert('Hata', err.response?.data?.message || 'Güncellenemedi.');
+      Alert.alert(
+        t('contentDetail.errorTitle'),
+        err.response?.data?.message || t('contentDetail.saveError')
+      );
     } finally {
       setSaving(false);
     }
@@ -148,6 +155,6 @@ export function useContentDetail(id, navigation) {
     startEditing,
     pickImage,
     handleSaveEdit,
-    isPickingImage
+    isPickingImage,
   };
 }

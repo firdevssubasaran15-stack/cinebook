@@ -1,5 +1,6 @@
 const { dbQuery } = require('@/database/db');
 const contentService = require('@/features/content/content.service');
+const ContentEmotionsUtils = require('@/features/content/contentEmotions.utils');
 
 class CalendarService {
   getHistory(userId) {
@@ -17,7 +18,7 @@ class CalendarService {
     `, [userId]);
 
     // Apply emotion tags
-    const recordsWithEmotions = contentService.attachTopEmotions(records) || [];
+    const recordsWithEmotions = ContentEmotionsUtils.attachTopEmotions(records) || [];
     const list = Array.isArray(recordsWithEmotions) ? recordsWithEmotions : [recordsWithEmotions];
 
     // Group by date

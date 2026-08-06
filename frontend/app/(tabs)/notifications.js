@@ -1,13 +1,17 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import Icon from '@/features/icon/components/Icon';
 import { useNotifications } from '@/features/notifications/hooks/useNotifications';
 import { notificationsStyles as styles } from '@/features/notifications/styles/notifications.styles';
 
+import { resolveNotificationMessage } from '@/features/notifications/utils/notificationMessageParser';
+
 export default function NotificationsScreen() {
   const { colors: COLORS } = useTheme();
-  
+  const { t } = useLanguage();
+
   const {
     notifications,
     loading,
@@ -17,12 +21,11 @@ export default function NotificationsScreen() {
 
   const renderItem = ({ item }) => {
     const isUnread = item.is_read === 0;
-    
     const containerStyle = `${styles.itemContainerBase} ${isUnread ? styles.itemContainerUnread : styles.itemContainerRead}`;
     const messageStyle = `${styles.itemMessageBase} ${isUnread ? styles.itemMessageUnread : styles.itemMessageRead}`;
-    
+
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         className={containerStyle}
         onPress={() => isUnread && handleMarkAsRead(item.id)}
       >
@@ -31,10 +34,10 @@ export default function NotificationsScreen() {
         </View>
         <View className={styles.itemTextContainer}>
           <Text className={messageStyle}>
-            {item.message}
+            {resolveNotificationMessage(item.message, t)}
           </Text>
           <Text className={styles.itemDate}>
-            {new Date(item.created_at).toLocaleDateString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+            {new Date(item.created_at).toLocaleDateString(undefined, { hour: '2-digit', minute: '2-digit' })}
           </Text>
         </View>
         {isUnread && <View className={styles.unreadDot} />}
@@ -45,7 +48,7 @@ export default function NotificationsScreen() {
   return (
     <View className={styles.mainContainer}>
       <View className={styles.headerContainer}>
-        <Text className={styles.headerTitle}>Bildirimler</Text>
+        <Text className={styles.headerTitle}>{t('notifications.title')}</Text>
         <TouchableOpacity onPress={handleMarkAllAsRead}>
           <Icon name="CheckCircle" size={24} color={COLORS.primary} />
         </TouchableOpacity>
@@ -58,7 +61,7 @@ export default function NotificationsScreen() {
       ) : notifications.length === 0 ? (
         <View className={styles.centerContainer}>
           <Icon name="BellSlash" size={48} color={COLORS.textMuted} />
-          <Text className={styles.emptyText}>Hiç bildiriminiz yok.</Text>
+          <Text className={styles.emptyText}>{t('notifications.empty')}</Text>
         </View>
       ) : (
         <FlatList

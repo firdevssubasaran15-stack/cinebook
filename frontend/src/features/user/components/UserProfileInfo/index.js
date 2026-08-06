@@ -9,12 +9,15 @@ import UserSimilarityBadge from '@/features/user/components/UserSimilarityBadge'
 import { GRADIENTS } from '@/constants/colors';
 import { API_BASE_URL } from '@/constants/api';
 import { userProfileStyles as styles } from '@/features/user/styles/userProfile.styles';
+import { useLocalizedDate } from '@/hooks/useLocalizedDate';
 
-export default function UserProfileInfo({ 
+export default function UserProfileInfo({
   profile, isMe, user, COLORS, isDark, t, currentLanguage,
-  openShareSheet, openUserList, handleToggleFollow, followLoading, 
-  setNewUsername, setEditProfileModal 
+  openShareSheet, openUserList, handleToggleFollow, followLoading,
+  setNewUsername, setEditProfileModal
 }) {
+  const { formatDate } = useLocalizedDate();
+
   return (
     <LinearGradient colors={isDark ? GRADIENTS.hero : [COLORS.surfaceElevated, COLORS.background]} style={styles.headerGradient}>
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
@@ -24,7 +27,7 @@ export default function UserProfileInfo({
       <TouchableOpacity style={styles.calendarButton} onPress={() => router.push('/calendar')}>
         <Icon name="CalendarBlank" size={24} color={COLORS.textPrimary} />
       </TouchableOpacity>
-      
+
       <View style={styles.profileInfoContainer}>
         {profile?.profile_image ? (
           <Image source={{ uri: `${API_BASE_URL}${profile.profile_image}` }} style={styles.profileImage} contentFit="cover" />
@@ -35,7 +38,7 @@ export default function UserProfileInfo({
         )}
         <Text style={[styles.username, { color: COLORS.textPrimary }]}>@{profile?.username}</Text>
         <Text style={[styles.joinDate, { color: COLORS.textMuted }]}>
-          {t('userProfile.joinDate')} {new Date(profile?.created_at).toLocaleDateString(currentLanguage === 'en' ? 'en-US' : 'tr-TR')}
+          {t('userProfile.joinDate')} {formatDate(profile?.created_at)}
         </Text>
         <UserWeeklyEmotionBadge emotionId={profile?.weeklyEmotion} profile={profile} onPress={openShareSheet} />
         <UserSimilarityBadge profile={profile} currentUser={user} onPress={openShareSheet} />

@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { EMOTION_TAGS } from '@/constants/emotions';
 import Icon from '@/features/icon/components/Icon';
 
 export default function ContentCardTags({ topEmotions }) {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
 
   if (!topEmotions || topEmotions.length === 0) {
     return null;
@@ -27,7 +29,7 @@ export default function ContentCardTags({ topEmotions }) {
           >
             <Icon name={tagData.iconName} size={10} color={tagColor} weight="fill" />
             <Text style={{ color: tagColor }} className="text-[10px] font-bold ml-1">
-              {tagData.label}
+              {t(`emotionDiscovery.${tagId}`, { defaultValue: tagData.label })}
             </Text>
           </View>
         );

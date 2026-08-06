@@ -2,15 +2,18 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { API_BASE_URL } from '@/constants/api';
+import { useLocalizedDate } from '@/hooks/useLocalizedDate';
 
 export default function FeedCommentUserHeader({ comment, onPressUser }) {
+  const { formatDate } = useLocalizedDate();
+
   return (
     <TouchableOpacity className="flex-row items-center mb-3" onPress={onPressUser}>
       {comment.profile_image ? (
-        <Image 
-          source={{ uri: `${API_BASE_URL}${comment.profile_image}` }} 
+        <Image
+          source={{ uri: `${API_BASE_URL}${comment.profile_image}` }}
           className="w-9 h-9 rounded-full mr-2.5"
-          contentFit="cover" 
+          contentFit="cover"
         />
       ) : (
         <View className="w-9 h-9 rounded-full mr-2.5 bg-brand-primary justify-center items-center">
@@ -24,7 +27,7 @@ export default function FeedCommentUserHeader({ comment, onPressUser }) {
           {comment.username}
         </Text>
         <Text className="text-xs mt-0.5 text-text-lightMuted dark:text-text-darkMuted">
-          {new Date(comment.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}
+          {formatDate(comment.created_at)}
         </Text>
       </View>
     </TouchableOpacity>

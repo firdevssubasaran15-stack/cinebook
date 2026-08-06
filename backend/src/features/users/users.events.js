@@ -16,7 +16,7 @@ class UsersEvents extends EventEmitter {
       notificationsService.createNotification(
         followingId,
         'follow',
-        `@${followerUsername} seni takip etmeye başladı.`,
+        JSON.stringify({ key: 'notifications.follow', username: `@${followerUsername}` }),
         followerId
       );
     }

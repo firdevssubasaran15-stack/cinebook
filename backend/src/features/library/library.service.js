@@ -1,11 +1,12 @@
 const { dbQuery, dbGet, dbRun } = require('@/database/db');
 const contentService = require('@/features/content/content.service');
+const ContentEmotionsUtils = require('@/features/content/contentEmotions.utils');
 const { LIBRARY_STATUSES } = require('./library.constants');
 
 class LibraryService {
   getUserLibrary(userId) {
     // Get all library items joined with content data
-    return contentService.attachTopEmotions(dbQuery(`
+    return ContentEmotionsUtils.attachTopEmotions(dbQuery(`
       SELECT 
         l.id as library_id,
         l.status,

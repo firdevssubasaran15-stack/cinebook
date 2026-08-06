@@ -36,7 +36,9 @@
     "language": {
       "title": "Dil",
       "english": "İngilizce",
-      "turkish": "Türkçe"
+      "turkish": "Türkçe",
+      "spanish": "İspanyolca",
+      "french": "Fransızca"
     },
     "notificationsTitle": "Bildirimler",
     "notificationInterval": "Bildirim Alma Aralığı",
@@ -56,6 +58,62 @@
     "library": "Kitaplık",
     "notifications": "Bildirimler",
     "admin": "Admin"
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "empty": "Hiç bildiriminiz yok.",
+    "comment_liked": "{{username}} yorumunu beğendi. (Toplam beğeni: {{count}})",
+    "reply": "{{username}} yorumunuza cevap verdi.",
+    "follow": "{{username}} seni takip etmeye başladı.",
+    "system_quote": "Geçen haftaki duyguna özel tavsiye!"
+  },
+  "contentTypes": {
+    "movie": "🎦 Film",
+    "series": "📺 Dizi",
+    "book": "📚 Kitap"
+  },
+  "contentSearch": {
+    "moviePlaceholder": "Film ara...",
+    "seriesPlaceholder": "Dizi ara...",
+    "bookPlaceholder": "Kitap ara...",
+    "noMovies": "Henüz film eklenmemiş.",
+    "noSeries": "Henüz dizi eklenmemiş.",
+    "noBooks": "Henüz kitap eklenmemiş.",
+    "noResults": "\"{{query}}\" için sonuç bulunamadı."
+  },
+  "emotionDiscovery": {
+    "title": "Duyguyla Keşfet",
+    "mutluluk": "Mutluluk",
+    "heyecan": "Heyecan",
+    "yalnizlik": "Yalnızlık",
+    "uzuntu": "Üzüntü",
+    "korku": "Korku",
+    "ofke": "Öfke",
+    "saskinlik": "Şaşkınlık",
+    "tiksinme": "Tiksinme",
+    "huzur": "Huzur",
+    "minnettarlik": "Minnettarlık",
+    "sevgi": "Sevgi",
+    "sefkat": "Şefkat",
+    "umut": "Umut",
+    "merak": "Merak",
+    "ilham": "İlham",
+    "kaygi": "Kaygı",
+    "pismanlik": "Pişmanlık",
+    "bikkinlik": "Bıkkınlık",
+    "umutsuzluk": "Umutsuzluk",
+    "nostalji": "Nostalji",
+    "melankoli": "Melankoli",
+    "ozlem": "Özlem",
+    "aitlik": "Aitlik",
+    "yabancilasma": "Yabancılaşma",
+    "tukenmislik": "Tükenmişlik",
+    "hissizlik": "Hissizlik",
+    "kafa_karisikligi": "Kafa Karışıklığı",
+    "mahcubiyet": "Mahcubiyet",
+    "guvende_hissetme": "Güvende Hissetme",
+    "suphe": "Şüphe",
+    "tedirginlik": "Tedirginlik"
   },
   "userProfile": {
     "joinDate": "Katılım:",
@@ -155,6 +213,8 @@
     "doNotShowToday": "Bugün tekrar gösterme"
   },
   "homeFeed": {
+    "greeting": "Merhaba, {{username}} 👋",
+    "discoverPrompt": "Bugün ne keşfetmek istersin?",
     "recentComments": "Son Yorumlar",
     "empty": "Henüz yorum yapılmamış."
   },
@@ -227,5 +287,32 @@
     "newReadList": "Yeni Okuma Listesi",
     "listNamePlaceholder": "Liste Adı",
     "createBtn": "Oluştur"
+  },
+  "calendar": {
+    "title": "Tüketim Geçmişi",
+    "consumptions": "Tüketimleri",
+    "monthNames": ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"],
+    "monthNamesShort": ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"],
+    "dayNames": ["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"],
+    "dayNamesShort": ["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"],
+    "today": "Bugün"
+  },
+  "contentDetail": {
+    "loadError": "İçerik yüklenemedi.",
+    "deleteTitle": "İçeriği Sil",
+    "deleteMessage": "Bu içeriği tamamen silmek istediğinize emin misiniz? Tüm yorumlar ve hisler de silinecektir. Bu işlem geri alınamaz.",
+    "deleteCancel": "İptal",
+    "deleteConfirm": "Sil",
+    "deleteSuccess": "İçerik başarıyla silindi.",
+    "deleteError": "İçerik silinemedi.",
+    "imageCancelled": "Resim seçimi iptal edildi.",
+    "imageError": "Resim seçilirken bir hata oluştu.",
+    "validationError": "Başlık ve yazar/yönetmen zorunludur.",
+    "saveSuccess": "İçerik başarıyla güncellendi.",
+    "saveError": "İçerik güncellenemedi.",
+    "warningTitle": "Uyarı",
+    "errorTitle": "Hata",
+    "successTitle": "Başarılı",
+    "infoTitle": "Bilgi"
   }
 }

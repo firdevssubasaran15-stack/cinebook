@@ -1,6 +1,6 @@
 const usersRepository = require('./users.repository');
 const similarityService = require('./similarity.service');
-const feelingsRepository = require('@/features/feelings/feelings.repository');
+const feelingTagsRepository = require('@/features/feelings/feelingTags.repository');
 const usersEvents = require('./users.events');
 const usersValidator = require('./users.validator');
 const usersEmotionsUtils = require('./usersEmotions.utils');
@@ -19,7 +19,7 @@ class UsersService {
       isFollowing = !!follow;
     }
 
-    const weeklyEmotion = feelingsRepository.getUserWeeklyEmotion(userId);
+    const weeklyEmotion = feelingTagsRepository.getUserWeeklyEmotion(userId);
     
     let similarityPercentage = null;
     if (currentUserId && currentUserId !== userId) {
@@ -110,7 +110,7 @@ class UsersService {
   }
 
   getTopEmotions(userId, limit = 5) {
-    const rows = feelingsRepository.getUserTopEmotions(userId, limit);
+    const rows = feelingTagsRepository.getUserTopEmotions(userId, limit);
     return usersEmotionsUtils.padEmotions(rows, limit);
   }
 

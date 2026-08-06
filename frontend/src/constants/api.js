@@ -1,7 +1,7 @@
 // API Base URL — Cihazınızın IP adresini buraya yazın
 // Örnek: 'http://192.168.1.100:3000'
 // localhost ÇALIŞMAZ — mobil cihazda IP adresi kullanın
-export const API_BASE_URL = 'http://192.168.1.163:3000';
+export const API_BASE_URL = 'http://192.168.1.153:3000';
 
 export const ENDPOINTS = {
   // Auth

@@ -23,7 +23,7 @@ export default function TopEmotionsList({ topEmotions }) {
           return (
             <View key={tagId} className={styles.topEmotionTag} style={{ backgroundColor: `${tagColor}15`, borderColor: `${tagColor}40` }}>
               <Icon name={tagData.iconName} size={14} color={tagColor} weight="fill" />
-              <Text className={styles.topEmotionText} style={{ color: tagColor }}>{tagData.label}</Text>
+              <Text className={styles.topEmotionText} style={{ color: tagColor }}>{t(`emotionDiscovery.${tagId}`, { defaultValue: tagData.label })}</Text>
             </View>
           );
         })}

@@ -6,9 +6,11 @@ import ContentCard from '@/features/content/components/ContentCard';
 import SearchBar from '@/features/content/components/SearchBar';
 import EmotionDiscovery from '@/features/feelings/components/EmotionDiscovery';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function SeriesScreen() {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
 
   const [series, setSeries] = useState([]);
   const [search, setSearch] = useState('');
@@ -38,7 +40,7 @@ export default function SeriesScreen() {
 
   return (
     <View className="flex-1 bg-light-bg dark:bg-dark-bg">
-      <SearchBar value={search} onChangeText={setSearch} placeholder="Dizi ara..." showTagFilter={false} />
+      <SearchBar value={search} onChangeText={setSearch} placeholder={t('contentSearch.seriesPlaceholder')} showTagFilter={false} />
       <FlatList
         data={series}
         numColumns={2}
@@ -51,7 +53,7 @@ export default function SeriesScreen() {
             <ContentCard item={item} onPress={() => router.push(`/detail/${item.id}`)} />
           </View>
         )}
-        ListEmptyComponent={<Text className="text-center text-text-lightMuted dark:text-text-darkMuted mt-8">{search ? `"${search}" için sonuç bulunamadı.` : 'Henüz dizi eklenmemiş.'}</Text>}
+        ListEmptyComponent={<Text className="text-center text-text-lightMuted dark:text-text-darkMuted mt-8">{search ? t('contentSearch.noResults', { query: search }) : t('contentSearch.noSeries')}</Text>}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchSeries(); }} tintColor={COLORS.primary} />}
       />
     </View>

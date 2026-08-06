@@ -4,9 +4,11 @@ import { Image } from 'expo-image';
 import Icon from '@/features/icon/components/Icon';
 import { API_BASE_URL } from '@/constants/api';
 import { useTheme } from '@/context/ThemeContext';
+import { useContentTypeLabel } from '@/features/content/hooks/useContentTypeLabel';
 
 export default function UserCommentContext({ comment, onPressContent }) {
   const { colors: COLORS } = useTheme();
+  const { getContentTypeLabel } = useContentTypeLabel();
 
   return (
     <TouchableOpacity className="flex-row items-center mb-4 pb-4 border-b border-light-border dark:border-dark-border" onPress={onPressContent}>
@@ -26,7 +28,7 @@ export default function UserCommentContext({ comment, onPressContent }) {
           {comment.content_title}
         </Text>
         <Text className="text-xs text-text-lightSecondary dark:text-text-darkSecondary">
-          {comment.content_type === 'movie' ? '🎬 Film' : comment.content_type === 'series' ? '📺 Dizi' : '📚 Kitap'}
+          {getContentTypeLabel(comment.content_type)}
         </Text>
       </View>
       <Icon name="ArrowRight" size={20} color={COLORS.textSecondary} />

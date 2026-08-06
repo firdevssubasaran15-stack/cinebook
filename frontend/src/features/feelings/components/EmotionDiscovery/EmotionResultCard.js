@@ -2,11 +2,13 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import Icon from '@/features/icon/components/Icon';
 import { EMOTION_TAGS } from '@/constants/emotions';
 
 export default function EmotionResultCard({ item }) {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <TouchableOpacity
@@ -52,7 +54,7 @@ export default function EmotionResultCard({ item }) {
               >
                 <Icon name={tagData.iconName} size={10} color={tagColor} weight="fill" />
                 <Text style={{ fontSize: 10, fontWeight: '600', color: tagColor }}>
-                  {tagData.label}
+                  {t(`emotionDiscovery.${tagId}`, { defaultValue: tagData.label })}
                 </Text>
               </View>
             );

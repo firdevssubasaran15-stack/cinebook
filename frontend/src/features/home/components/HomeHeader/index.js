@@ -6,6 +6,7 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { GRADIENTS } from '@/constants/colors';
 import { API_BASE_URL } from '@/constants/api';
 import Icon from '@/features/icon/components/Icon';
@@ -13,6 +14,7 @@ import Icon from '@/features/icon/components/Icon';
 export default function HomeHeader({ unreadCount }) {
   const { colors: COLORS, isDark } = useTheme();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
 
   return (
@@ -23,10 +25,10 @@ export default function HomeHeader({ unreadCount }) {
       <View className="flex-row justify-between items-center mb-5">
         <View className="flex-1 pr-4">
           <Text className="text-[22px] font-extrabold text-text-lightPrimary dark:text-text-darkPrimary" numberOfLines={1}>
-            Merhaba, {user?.username} 👋
+            {t('homeFeed.greeting', { username: user?.username })}
           </Text>
           <Text className="text-[13px] mt-1 text-text-lightMuted dark:text-text-darkMuted">
-            Bugün ne keşfetmek istersin?
+            {t('homeFeed.discoverPrompt')}
           </Text>
         </View>
         

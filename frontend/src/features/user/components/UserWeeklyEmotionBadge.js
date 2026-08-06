@@ -13,7 +13,9 @@ export default function UserWeeklyEmotionBadge({ emotionId, profile, onPress }) 
   if (!emotionId) return null;
 
   const emotionData = EMOTION_TAGS.find(e => e.id === emotionId);
-  const emotionLabel = emotionData ? emotionData.label : emotionId;
+  const emotionLabel = emotionData
+    ? t(`emotionDiscovery.${emotionData.id}`, { defaultValue: emotionData.label })
+    : emotionId;
   const tagColor = emotionData ? (COLORS[emotionData.id] || COLORS.textPrimary) : COLORS.primary;
 
   return (

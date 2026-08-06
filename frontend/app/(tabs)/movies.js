@@ -12,9 +12,11 @@ import ContentCard from '@/features/content/components/ContentCard';
 import SearchBar from '@/features/content/components/SearchBar';
 import EmotionDiscovery from '@/features/feelings/components/EmotionDiscovery';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function MoviesScreen() {
   const { colors: COLORS } = useTheme();
+  const { t } = useLanguage();
 
   const [movies, setMovies] = useState([]);
   const [search, setSearch] = useState('');
@@ -51,7 +53,7 @@ export default function MoviesScreen() {
       <SearchBar
         value={search}
         onChangeText={setSearch}
-        placeholder="Film ara..."
+        placeholder={t('contentSearch.moviePlaceholder')}
         showTagFilter={false}
       />
       <FlatList
@@ -68,7 +70,7 @@ export default function MoviesScreen() {
         )}
         ListEmptyComponent={
           <Text className="text-center text-text-lightMuted dark:text-text-darkMuted mt-8">
-            {search ? `"${search}" için sonuç bulunamadı.` : 'Henüz film eklenmemiş.'}
+            {search ? t('contentSearch.noResults', { query: search }) : t('contentSearch.noMovies')}
           </Text>
         }
         refreshControl={
