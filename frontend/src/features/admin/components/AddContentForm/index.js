@@ -21,7 +21,7 @@ export default function AddContentForm({ onSuccess }) {
     type, setType,
     title, setTitle,
     directorAuthor, setDirectorAuthor,
-    summary, setSummary,
+    multiLang,
     coverImage,
     loading,
     pickImage,
@@ -67,11 +67,24 @@ export default function AddContentForm({ onSuccess }) {
 
       <View className={styles.inputContainer}>
         <Text className={styles.sectionLabel}>{t('contentEdit.summaryLabel')}</Text>
+        <View className="flex-row gap-2 mb-2">
+          {multiLang.LANGUAGES.map(lang => (
+            <TouchableOpacity 
+              key={lang}
+              onPress={() => multiLang.setActiveTab(lang)}
+              className={`px-3 py-1 rounded-full ${multiLang.activeTab === lang ? 'bg-brand-primary' : 'bg-black/10 dark:bg-white/10'}`}
+            >
+              <Text className={multiLang.activeTab === lang ? 'text-white font-bold text-[10px] uppercase tracking-wider' : 'text-text-lightSecondary dark:text-text-darkSecondary font-bold text-[10px] uppercase tracking-wider'}>
+                {lang}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         <TextInput
           className={styles.textArea}
-          value={summary}
-          onChangeText={setSummary}
-          placeholder={t('admin.summaryPlaceholder')}
+          value={multiLang.summaries[multiLang.activeTab]}
+          onChangeText={(text) => multiLang.updateSummary(multiLang.activeTab, text)}
+          placeholder={`${t('admin.summaryPlaceholder')} (${multiLang.activeTab.toUpperCase()})`}
           placeholderTextColor={COLORS.textMuted}
           multiline
           textAlignVertical="top"

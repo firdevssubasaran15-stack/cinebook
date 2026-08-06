@@ -1,9 +1,10 @@
-﻿import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import { contentApi } from '@/api/endpoints/content.api';
 import { router } from 'expo-router';
+import { useMultiLangSummary } from '@/hooks/useMultiLangSummary';
 
 /**
  * useContentDetail
@@ -20,7 +21,8 @@ export function useContentDetail(id, navigation) {
   const [isEditing, setIsEditing]           = useState(false);
   const [editTitle, setEditTitle]           = useState('');
   const [editAuthor, setEditAuthor]         = useState('');
-  const [editSummary, setEditSummary]       = useState('');
+  
+  const multiLang = useMultiLangSummary(content?.summary);
   const [editCover, setEditCover]           = useState(null);
   const [saving, setSaving]                 = useState(false);
   const [isPickingImage, setIsPickingImage] = useState(false);
@@ -74,7 +76,10 @@ export function useContentDetail(id, navigation) {
     if (!content) return;
     setEditTitle(content.title);
     setEditAuthor(content.director_author);
-    setEditSummary(content.summary || '');
+    // useMultiLangSummary automatically picks up content?.summary when content changes,
+    // but just to be sure we can re-initialize it here if we added a reset method, 
+    // but useEffect in the hook handles [initialValue].
+    multiLang.setActiveTab('tr');
     setEditCover(null);
     setIsEditing(true);
   };
@@ -112,7 +117,7 @@ export function useContentDetail(id, navigation) {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('director_author', author);
-      formData.append('summary', editSummary.trim());
+      formData.append('summary', multiLang.getSummaryJsonString());
       if (editCover) {
         const filename = editCover.fileName || editCover.uri.split('/').pop();
         let mimeType = editCover.mimeType;
@@ -146,8 +151,7 @@ export function useContentDetail(id, navigation) {
     setEditTitle,
     editAuthor,
     setEditAuthor,
-    editSummary,
-    setEditSummary,
+    multiLang,
     editCover,
     saving,
     fetchContent,

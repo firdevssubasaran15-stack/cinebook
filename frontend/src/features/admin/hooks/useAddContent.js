@@ -3,14 +3,16 @@ import { Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { contentApi } from '@/api/endpoints/content.api';
 import { validateContentInput } from '../utils/addContentValidator';
+import { useMultiLangSummary } from '@/hooks/useMultiLangSummary';
 
 export const useAddContent = (onSuccess) => {
   const [type, setType] = useState('movie');
   const [title, setTitle] = useState('');
   const [directorAuthor, setDirectorAuthor] = useState('');
-  const [summary, setSummary] = useState('');
   const [coverImage, setCoverImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  const multiLang = useMultiLangSummary('');
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -40,7 +42,7 @@ export const useAddContent = (onSuccess) => {
       formData.append('type', type);
       formData.append('title', validation.t);
       formData.append('director_author', validation.d);
-      formData.append('summary', summary.trim());
+      formData.append('summary', multiLang.getSummaryJsonString());
 
       if (coverImage) {
         const filename = coverImage.fileName || coverImage.uri.split('/').pop();
@@ -63,7 +65,7 @@ export const useAddContent = (onSuccess) => {
       Alert.alert('Başarılı', 'İçerik başarıyla eklendi!');
       setTitle('');
       setDirectorAuthor('');
-      setSummary('');
+      multiLang.setSummaries({ tr: '', en: '', es: '', fr: '' });
       setCoverImage(null);
       onSuccess?.();
     } catch (err) {
@@ -77,7 +79,7 @@ export const useAddContent = (onSuccess) => {
     type, setType,
     title, setTitle,
     directorAuthor, setDirectorAuthor,
-    summary, setSummary,
+    multiLang,
     coverImage,
     loading,
     pickImage,

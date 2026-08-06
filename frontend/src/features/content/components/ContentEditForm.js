@@ -9,8 +9,7 @@ export default function ContentEditForm({
   setEditTitle,
   editAuthor,
   setEditAuthor,
-  editSummary,
-  setEditSummary,
+  multiLang,
   authorLabel,
   saving,
   onCancel,
@@ -38,10 +37,23 @@ export default function ContentEditForm({
       </View>
       <View>
         <Text className={styles.editInputLabel}>{t('contentEdit.summaryLabel')}</Text>
+        <View className="flex-row gap-2 mb-2">
+          {multiLang.LANGUAGES.map(lang => (
+            <TouchableOpacity 
+              key={lang}
+              onPress={() => multiLang.setActiveTab(lang)}
+              className={`px-3 py-1 rounded-full ${multiLang.activeTab === lang ? 'bg-brand-primary' : 'bg-black/10 dark:bg-white/10'}`}
+            >
+              <Text className={multiLang.activeTab === lang ? 'text-white font-bold text-[10px] uppercase tracking-wider' : 'text-text-lightSecondary dark:text-text-darkSecondary font-bold text-[10px] uppercase tracking-wider'}>
+                {lang}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         <TextInput 
           className={styles.editSummaryInput} 
-          value={editSummary} 
-          onChangeText={setEditSummary} 
+          value={multiLang.summaries[multiLang.activeTab]} 
+          onChangeText={(text) => multiLang.updateSummary(multiLang.activeTab, text)} 
           multiline 
           textAlignVertical="top" 
         />

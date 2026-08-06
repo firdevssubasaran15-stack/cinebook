@@ -53,8 +53,7 @@ export default function DetailScreen() {
     setEditTitle,
     editAuthor,
     setEditAuthor,
-    editSummary,
-    setEditSummary,
+    multiLang,
     editCover,
     saving,
     handleDeleteContent,
@@ -110,8 +109,7 @@ export default function DetailScreen() {
               setEditTitle={setEditTitle}
               editAuthor={editAuthor}
               setEditAuthor={setEditAuthor}
-              editSummary={editSummary}
-              setEditSummary={setEditSummary}
+              multiLang={multiLang}
               authorLabel={authorLabel}
               saving={saving}
               onCancel={() => setIsEditing(false)}
