@@ -38,7 +38,7 @@ export default function EmotionFilter({ displayedEmotions, selectedTag, onSelect
                   className={`text-[13px] ${isSelected ? 'font-bold' : 'font-medium text-text-lightPrimary dark:text-text-darkPrimary'}`} 
                   style={isSelected ? { color: tagColor } : undefined}
                 >
-                  {t(`emotionDiscovery.${tag.id}`, tag.label)}
+                  {tag.label}
                 </Text>
               </TouchableOpacity>
             );

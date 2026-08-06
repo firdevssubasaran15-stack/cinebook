@@ -109,9 +109,9 @@ class UsersService {
     return usersRepository.getUserAuthProfile(userId);
   }
 
-  getTopEmotions(userId, limit = 5) {
+  getTopEmotions(userId, limit = 5, locale = 'tr') {
     const rows = feelingTagsRepository.getUserTopEmotions(userId, limit);
-    return usersEmotionsUtils.padEmotions(rows, limit);
+    return usersEmotionsUtils.padEmotions(rows, limit, locale);
   }
 
   getUserPrivileges(userId) {

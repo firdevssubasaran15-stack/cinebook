@@ -12,8 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { GRADIENTS } from '@/constants/colors';
-import { EMOTION_TAGS } from '@/constants/emotions';
-
+import { useEmotionTags } from '@/hooks/useEmotionTags';
 import Icon from '@/features/icon/components/Icon';
 import EmotionTagSelector from '@/features/feelings/components/EmotionTagSelector';
 import CommentItem from '@/features/comments/components/CommentItem';
@@ -25,6 +24,7 @@ export default function FeelingsSection({ contentId, onShare }) {
   const { user, isAdmin, privileges } = useAuth();
   const { colors: COLORS } = useTheme();
   const { t } = useLanguage();
+  const { tags } = useEmotionTags();
   const isModerator = isAdmin || privileges?.can_moderate_content === 1;
 
   const {
@@ -64,7 +64,7 @@ export default function FeelingsSection({ contentId, onShare }) {
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className={fStyles.tagsScroll}>
         <View className={fStyles.tagsRow}>
-          {EMOTION_TAGS.map((tag) => {
+          {tags.map((tag) => {
             const isSelected = tagFilter === tag.id;
             const tagColor = COLORS[tag.id] || COLORS.textPrimary;
             return (

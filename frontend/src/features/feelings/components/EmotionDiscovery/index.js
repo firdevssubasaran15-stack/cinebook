@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { EMOTION_TAGS } from '@/constants/emotions';
+import { useEmotionTags } from '@/hooks/useEmotionTags';
 import { useEmotionDiscovery } from './useEmotionDiscovery';
 import EmotionFilter from './EmotionFilter';
 import EmotionResults from './EmotionResults';
@@ -10,9 +10,11 @@ export default function EmotionDiscovery({ type }) {
   const { topEmotions, selectedTag, undiscoveredContent, tagLoading } = state;
   const { handleSelectTag } = actions;
 
+  const { tags } = useEmotionTags();
+
   const displayedEmotions = [
-    ...EMOTION_TAGS.filter(t => topEmotions.includes(t.id)),
-    ...EMOTION_TAGS.filter(t => !topEmotions.includes(t.id))
+    ...tags.filter(t => topEmotions.includes(t.id)),
+    ...tags.filter(t => !topEmotions.includes(t.id))
   ];
 
   return (

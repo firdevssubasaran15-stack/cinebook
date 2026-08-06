@@ -1,16 +1,11 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { View, Text, Modal, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
 import Icon from '@/features/icon/components/Icon';
-import { EMOTION_TAGS } from '@/constants/emotions';
 import { styles } from './styles';
 import { useLanguage } from '@/hooks/useLanguage';
-
-const TAILWIND_COLORS = [
-  '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e',
-  '#f87171', '#fb923c', '#fbbf24', '#facc15', '#a3e635', '#4ade80', '#34d399', '#2dd4bf', '#22d3ee', '#38bdf8', '#60a5fa', '#818cf8', '#a78bfa', '#c084fc', '#e879f9', '#f472b6', '#fb7185'
-];
+import { useEmotionTags } from '@/hooks/useEmotionTags';
 
 export default function MoodModal({
   visible,
@@ -24,14 +19,7 @@ export default function MoodModal({
 }) {
   const { colors: COLORS } = useTheme();
   const { t } = useLanguage();
-
-  const randomizedEmotions = useMemo(() => {
-    const shuffledColors = [...TAILWIND_COLORS].sort(() => 0.5 - Math.random());
-    return EMOTION_TAGS.map((tag, index) => ({
-      ...tag,
-      randomColor: shuffledColors[index % shuffledColors.length]
-    }));
-  }, []);
+  const { tags: randomizedEmotions } = useEmotionTags({ randomizeColors: true });
 
   return (
     <Modal
