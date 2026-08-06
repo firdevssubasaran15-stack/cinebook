@@ -2,62 +2,16 @@ const contentRepository = require('./content.repository');
 const feelingsService = require('@/features/feelings/feelings.service');
 const commentsService = require('@/features/comments/comments.service');
 const contentValidator = require('./content.validator');
+const contentRecommendationService = require('./contentRecommendation.service');
+const ContentEmotionsUtils = require('./contentEmotions.utils');
 
 class ContentService {
-  attachTopEmotions(contents) {
-    if (!contents || (Array.isArray(contents) && contents.length === 0)) return contents;
-    
-    const isSingle = !Array.isArray(contents);
-    const list = isSingle ? [contents] : contents;
-    
-    const contentIds = list.map(c => c.id || c.content_id); // Fallback for library join if needed
-    if (contentIds.length === 0) return contents;
-    
-    const rows = feelingsService.getTopEmotionsForContents(contentIds);
-
-    const tagStats = {};
-    for (const row of rows) {
-      if (!tagStats[row.content_id]) {
-        tagStats[row.content_id] = { maxCount: 0, tags: [] };
-      }
-      const stat = tagStats[row.content_id];
-      if (row.count > stat.maxCount) {
-        stat.maxCount = row.count;
-        stat.tags = [row.tag];
-      } else if (row.count === stat.maxCount) {
-        stat.tags.push(row.tag);
-      }
-    }
-
-    list.forEach(c => {
-      const cid = c.id || c.content_id;
-      c.top_emotions = tagStats[cid] ? tagStats[cid].tags : [];
-    });
-    
-    return isSingle ? list[0] : list;
-  }
-
   getRecommendationsByMood(mood) {
-    const types = ['movie', 'series', 'book'];
-    const result = {};
-
-    for (const type of types) {
-      const items = contentRepository.getLatestByTypeWithComments(type, 50);
-      const itemsWithEmotions = this.attachTopEmotions(items) || [];
-      const match = itemsWithEmotions.find(c => c.top_emotions && c.top_emotions.includes(mood));
-      result[type] = match || null;
-    }
-
-    return result;
+    return contentRecommendationService.getRecommendationsByMood(mood);
   }
 
   getUndiscoveredByMood(userId, mood, type = null) {
-    const items = contentRepository.getUndiscoveredByTag(userId, mood, type);
-    
-    const itemsWithEmotions = this.attachTopEmotions(items) || [];
-    const validItems = itemsWithEmotions.filter(c => c.top_emotions && c.top_emotions.includes(mood));
-    
-    return validItems;
+    return contentRecommendationService.getUndiscoveredByMood(userId, mood, type);
   }
 
   getLatestByType() {
@@ -66,7 +20,7 @@ class ContentService {
 
     for (const type of types) {
       const items = contentRepository.getMostCommentedRecent(type, 5);
-      result[type] = this.attachTopEmotions(items);
+      result[type] = ContentEmotionsUtils.attachTopEmotions(items);
     }
 
     return result;
@@ -75,16 +29,16 @@ class ContentService {
   getByType(type, search = '') {
     if (search) {
       const items = contentRepository.searchByType(type, search);
-      return this.attachTopEmotions(items);
+      return ContentEmotionsUtils.attachTopEmotions(items);
     }
     const items = contentRepository.getByType(type);
-    return this.attachTopEmotions(items);
+    return ContentEmotionsUtils.attachTopEmotions(items);
   }
 
   getById(id) {
     const item = contentRepository.findById(id);
     if (!item) throw new Error('İçerik bulunamadı.');
-    return this.attachTopEmotions(item);
+    return ContentEmotionsUtils.attachTopEmotions(item);
   }
 
   create({ type, title, director_author, summary, cover_image }) {

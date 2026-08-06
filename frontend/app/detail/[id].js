@@ -15,7 +15,6 @@ import LibraryStatusSelector from '@/features/library/components/LibraryStatusSe
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { API_BASE_URL } from '@/constants/api';
-import { EMOTION_TAGS } from '@/constants/emotions';
 import Icon from '@/features/icon/components/Icon';
 import { useContentDetail } from '@/features/content/hooks/useContentDetail';
 import { detailStyles as styles } from '@/features/content/styles/detail.styles';
@@ -25,6 +24,9 @@ import FeelingsSection from '@/features/feelings/components/FeelingsSection';
 import ContentEditForm from '@/features/content/components/ContentEditForm';
 import ContentCover from '@/features/content/components/ContentCover';
 import { useLanguage } from '@/hooks/useLanguage';
+import ContentHeader from '@/features/content/components/ContentHeader';
+import ContentInfo from '@/features/content/components/ContentInfo';
+import TopEmotionsList from '@/features/content/components/TopEmotionsList';
 
 // Ana Detay Ekranı
 export default function DetailScreen() {
@@ -93,27 +95,14 @@ export default function DetailScreen() {
         />
 
         <View className={styles.contentInfoContainer}>
-          <View className={styles.headerRow}>
-            <View className={styles.typeBadge}>
-              <View className={styles.typeBadgeRow}>
-                <Icon name={typeIcon} size={14} color={COLORS.primary} weight="bold" />
-                <Text className={styles.typeBadgeText}>{typeLabel}</Text>
-              </View>
-            </View>
-            
-            {isAdmin && !isEditing && (
-              <View className={styles.adminButtonsRow}>
-                <TouchableOpacity onPress={startEditing} className={styles.editButton}>
-                  <Icon name="Pencil" size={14} color={COLORS.primary} weight="bold" />
-                  <Text className={styles.editButtonText}>{t('detail.edit')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleDeleteContent} className={styles.deleteButton}>
-                  <Icon name="Trash" size={14} color="#ef4444" weight="bold" />
-                  <Text className={styles.deleteButtonText}>{t('detail.delete')}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
+          <ContentHeader 
+            typeIcon={typeIcon} 
+            typeLabel={typeLabel} 
+            isAdmin={isAdmin} 
+            isEditing={isEditing} 
+            onEdit={startEditing} 
+            onDelete={handleDeleteContent} 
+          />
 
           {isEditing ? (
             <ContentEditForm
@@ -129,36 +118,10 @@ export default function DetailScreen() {
               onSave={handleSaveEdit}
             />
           ) : (
-            <>
-              <Text className={styles.titleText}>{content.title}</Text>
-              <Text className={styles.authorText}>{authorLabel}: {content.director_author}</Text>
-              {content.summary ? (
-                <View className={styles.summaryContainer}>
-                  <Text className={styles.summaryTitle}>{t('detail.summary')}</Text>
-                  <Text className={styles.summaryText}>{content.summary}</Text>
-                </View>
-              ) : null}
-            </>
+            <ContentInfo content={content} authorLabel={authorLabel} />
           )}
 
-          {content.top_emotions && content.top_emotions.length > 0 && (
-            <View className={styles.topEmotionsContainer}>
-              <Text className={styles.topEmotionsTitle}>{t('detail.topEmotionsTitle')}</Text>
-              <View className={styles.topEmotionsRow}>
-                {content.top_emotions.map(tagId => {
-                  const tagData = EMOTION_TAGS.find(t => t.id === tagId);
-                  if (!tagData) return null;
-                  const tagColor = COLORS[tagId] || COLORS.textPrimary;
-                  return (
-                    <View key={tagId} className={styles.topEmotionTag} style={{ backgroundColor: `${tagColor}15`, borderColor: `${tagColor}40` }}>
-                      <Icon name={tagData.iconName} size={14} color={tagColor} weight="fill" />
-                      <Text className={styles.topEmotionText} style={{ color: tagColor }}>{tagData.label}</Text>
-                    </View>
-                  );
-                })}
-              </View>
-            </View>
-          )}
+          <TopEmotionsList topEmotions={content.top_emotions} />
 
           <LibraryStatusSelector contentId={id} type={content.type} />
         </View>

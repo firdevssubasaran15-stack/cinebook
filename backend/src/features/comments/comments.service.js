@@ -1,29 +1,23 @@
 const commentsRepository = require('./comments.repository');
+const commentLikesRepository = require('./commentLikes.repository');
 const usersService = require('@/features/users/users.service');
 const commentEvents = require('./comments.events');
+const SentimentUtils = require('./sentiment.utils');
 
 class CommentsService {
-  _calculateSentiment(comment) {
-    const likes = comment.like_count || 0;
-    const dislikes = comment.dislike_count || 0;
-    const total = likes + dislikes;
-    const score = total === 0 ? 0 : (likes - dislikes) / total;
-    return { ...comment, sentiment_score: score };
-  }
-
   getByContentId(contentId, currentUserId = null) {
     const results = commentsRepository.findByContentId(contentId, currentUserId || -1);
-    return results.map(comment => this._calculateSentiment(comment));
+    return results.map(comment => SentimentUtils.attachSentiment(comment));
   }
 
   getByUserId(userId, currentUserId = null) {
     const results = commentsRepository.findByUserId(userId, currentUserId || -1);
-    return results.map(comment => this._calculateSentiment(comment));
+    return results.map(comment => SentimentUtils.attachSentiment(comment));
   }
 
   getFeed(currentUserId = null, limit = 20) {
     const results = commentsRepository.getFeed(currentUserId || -1, limit);
-    return results.map(comment => this._calculateSentiment(comment));
+    return results.map(comment => SentimentUtils.attachSentiment(comment));
   }
 
   create(userId, contentId, text, quote, parentId = null) {
@@ -87,32 +81,27 @@ class CommentsService {
     commentsRepository.update(commentId, trimmedText, trimmedQuote);
 
     const updatedComment = commentsRepository.findByIdWithUser(commentId);
-    const stats = commentsRepository.getCommentStats(commentId);
+    const stats = commentLikesRepository.getCommentStats(commentId);
 
-    const likes = stats.like_count || 0;
-    const dislikes = stats.dislike_count || 0;
-    const total = likes + dislikes;
-    const score = total === 0 ? 0 : (likes - dislikes) / total;
-
-    return { ...updatedComment, like_count: likes, dislike_count: dislikes, sentiment_score: score };
+    return SentimentUtils.applyStatsAndSentiment(updatedComment, stats);
   }
 
   toggleLike(commentId, userId) {
     const comment = commentsRepository.findById(commentId);
     if (!comment) throw new Error('Yorum bulunamadı.');
 
-    const existingLike = commentsRepository.findLike(commentId, userId);
+    const existingLike = commentLikesRepository.findLike(commentId, userId);
 
     if (existingLike) {
-      commentsRepository.deleteLike(commentId, userId);
+      commentLikesRepository.deleteLike(commentId, userId);
       return { liked: false };
     } else {
       // Eğer dislike varsa onu sil
-      commentsRepository.deleteDislike(commentId, userId);
-      commentsRepository.insertLike(commentId, userId);
+      commentLikesRepository.deleteDislike(commentId, userId);
+      commentLikesRepository.insertLike(commentId, userId);
       
       // Bildirim event'i fırlat
-      const totalLikes = commentsRepository.getLikeCount(commentId);
+      const totalLikes = commentLikesRepository.getLikeCount(commentId);
       commentEvents.emit('COMMENT_LIKED', { comment, userId, totalLikes, commentId });
 
       return { liked: true };
@@ -123,20 +112,21 @@ class CommentsService {
     const comment = commentsRepository.findById(commentId);
     if (!comment) throw new Error('Yorum bulunamadı.');
 
-    const existingDislike = commentsRepository.findDislike(commentId, userId);
+    const existingDislike = commentLikesRepository.findDislike(commentId, userId);
 
     if (existingDislike) {
-      commentsRepository.deleteDislike(commentId, userId);
+      commentLikesRepository.deleteDislike(commentId, userId);
       return { disliked: false };
     } else {
       // Eğer like varsa onu sil
-      commentsRepository.deleteLike(commentId, userId);
-      commentsRepository.insertDislike(commentId, userId);
+      commentLikesRepository.deleteLike(commentId, userId);
+      commentLikesRepository.insertDislike(commentId, userId);
       return { disliked: true };
     }
   }
 
   deleteByContentId(contentId) {
+    commentLikesRepository.deleteByContentId(contentId);
     return commentsRepository.deleteByContentId(contentId);
   }
 }

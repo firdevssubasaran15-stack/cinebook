@@ -1,4 +1,7 @@
 const sharedListsRepository = require('./shared-lists.repository');
+const sharedListMembersRepository = require('./sharedListMembers.repository');
+const sharedListContentsRepository = require('./sharedListContents.repository');
+const savedSharedListsRepository = require('./savedSharedLists.repository');
 const usersService = require('@/features/users/users.service');
 const contentService = require('@/features/content/content.service');
 const sharedListsPolicy = require('./shared-lists.policy');
@@ -41,11 +44,11 @@ class SharedListsService {
 
     sharedListsPolicy.canView(list, userId);
 
-    const members = sharedListsRepository.getListMembers(listId);
+    const members = sharedListMembersRepository.getListMembers(listId);
     const allMembers = this._mapMembersWithOwner(list.owner_id, members);
     
-    const contents = sharedListsRepository.getListContents(listId);
-    const isSaved = sharedListsRepository.findSavedList(listId, userId);
+    const contents = sharedListContentsRepository.getListContents(listId);
+    const isSaved = savedSharedListsRepository.findSavedList(listId, userId);
 
     return { ...list, members: allMembers, contents, is_saved_by_user: !!isSaved };
   }
@@ -59,26 +62,26 @@ class SharedListsService {
     const targetUser = usersService.getProfile(targetUserId);
     if (!targetUser) throw new Error('Davet edilecek kullanıcı bulunamadı.');
 
-    const existing = sharedListsRepository.findAnyMemberStatus(listId, targetUserId);
+    const existing = sharedListMembersRepository.findAnyMemberStatus(listId, targetUserId);
     if (existing) {
       if (existing.status === 'accepted') throw new Error('Kullanıcı zaten bu listeye üye.');
       if (existing.status === 'pending') throw new Error('Kullanıcıya zaten davet gönderilmiş.');
     }
 
-    sharedListsRepository.insertMemberPending(listId, targetUserId);
+    sharedListMembersRepository.insertMemberPending(listId, targetUserId);
     return { success: true };
   }
 
   acceptInvite(listId, userId) {
-    const existing = sharedListsRepository.findPendingMember(listId, userId);
+    const existing = sharedListMembersRepository.findPendingMember(listId, userId);
     if (!existing) throw new Error('Geçerli bir davet bulunamadı.');
 
-    sharedListsRepository.updateMemberAccepted(listId, userId);
+    sharedListMembersRepository.updateMemberAccepted(listId, userId);
     return { success: true };
   }
 
   rejectInvite(listId, userId) {
-    sharedListsRepository.deletePendingMember(listId, userId);
+    sharedListMembersRepository.deletePendingMember(listId, userId);
     return { success: true };
   }
 
@@ -91,15 +94,15 @@ class SharedListsService {
     const content = contentService.getById(contentId);
     if (!content) throw new Error('İçerik bulunamadı.');
 
-    const existing = sharedListsRepository.findListContent(listId, contentId);
+    const existing = sharedListContentsRepository.findListContent(listId, contentId);
     if (existing) throw new Error('Bu içerik zaten listede.');
 
-    sharedListsRepository.insertListContent(listId, contentId, userId);
+    sharedListContentsRepository.insertListContent(listId, contentId, userId);
     return { success: true };
   }
 
   getPendingInvitations(userId) {
-    return sharedListsRepository.getPendingInvitations(userId);
+    return sharedListMembersRepository.getPendingInvitations(userId);
   }
 
   toggleVisibility(listId, userId) {
@@ -120,15 +123,15 @@ class SharedListsService {
     
     sharedListsPolicy.canSave(list, userId);
     
-    const existing = sharedListsRepository.findSavedList(listId, userId);
+    const existing = savedSharedListsRepository.findSavedList(listId, userId);
     if (existing) return { success: true };
 
-    sharedListsRepository.insertSavedList(listId, userId);
+    savedSharedListsRepository.insertSavedList(listId, userId);
     return { success: true };
   }
 
   unsaveList(listId, userId) {
-    sharedListsRepository.deleteSavedList(listId, userId);
+    savedSharedListsRepository.deleteSavedList(listId, userId);
     return { success: true };
   }
 }

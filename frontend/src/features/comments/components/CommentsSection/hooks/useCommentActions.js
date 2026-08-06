@@ -1,5 +1,6 @@
 import { Alert } from 'react-native';
 import { commentsApi } from '@/api/endpoints/comments.api';
+import { optimisticLikeUpdate, optimisticDislikeUpdate } from '../../../utils/commentState.utils';
 
 export function useCommentActions({ contentId, user, setComments, fetchComments }) {
   
@@ -62,20 +63,7 @@ export function useCommentActions({ contentId, user, setComments, fetchComments 
       Alert.alert('Uyarı', 'Beğenmek için giriş yapmalısınız.');
       return;
     }
-    setComments(prev => prev.map(c => {
-      if (c.id === commentId) {
-        const isLiked = c.is_liked_by_user;
-        const isDisliked = c.is_disliked_by_user;
-        return {
-          ...c,
-          is_liked_by_user: !isLiked,
-          like_count: isLiked ? (c.like_count || 1) - 1 : (c.like_count || 0) + 1,
-          is_disliked_by_user: false,
-          dislike_count: isDisliked ? (c.dislike_count || 1) - 1 : (c.dislike_count || 0)
-        };
-      }
-      return c;
-    }));
+    setComments(prev => optimisticLikeUpdate(prev, commentId));
 
     try {
       await commentsApi.toggleLike(commentId);
@@ -89,20 +77,7 @@ export function useCommentActions({ contentId, user, setComments, fetchComments 
       Alert.alert('Uyarı', 'Beğenmemek için giriş yapmalısınız.');
       return;
     }
-    setComments(prev => prev.map(c => {
-      if (c.id === commentId) {
-        const isDisliked = c.is_disliked_by_user;
-        const isLiked = c.is_liked_by_user;
-        return {
-          ...c,
-          is_disliked_by_user: !isDisliked,
-          dislike_count: isDisliked ? (c.dislike_count || 1) - 1 : (c.dislike_count || 0) + 1,
-          is_liked_by_user: false,
-          like_count: isLiked ? (c.like_count || 1) - 1 : (c.like_count || 0)
-        };
-      }
-      return c;
-    }));
+    setComments(prev => optimisticDislikeUpdate(prev, commentId));
 
     try {
       await commentsApi.toggleDislike(commentId);

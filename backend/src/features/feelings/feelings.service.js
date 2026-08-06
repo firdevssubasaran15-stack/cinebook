@@ -1,4 +1,7 @@
 const feelingsRepository = require('./feelings.repository');
+const feelingLikesRepository = require('./feelingLikes.repository');
+const feelingTagsRepository = require('./feelingTags.repository');
+const FeelingsValidator = require('./feelings.validator');
 const { VALID_TAGS } = require('./feelings.constants');
 const usersService = require('@/features/users/users.service');
 
@@ -16,9 +19,7 @@ class FeelingsService {
   }
 
   searchByTag(tag, contentType = null) {
-    if (!VALID_TAGS.includes(tag)) {
-      throw new Error(`Geçersiz etiket. Geçerli etiketler: ${VALID_TAGS.join(', ')}`);
-    }
+    FeelingsValidator.validateTagSearch(tag);
 
     const feelings = feelingsRepository.findByTag(tag, contentType);
     return feelings.map((f) => this._mapFeelingTags(f));
@@ -30,19 +31,12 @@ class FeelingsService {
       throw new Error('"Bana Hissettirdikleri" paylaşma yetkiniz bulunmuyor.');
     }
 
-    if ((!text || text.trim().length === 0) && (!tags || tags.length === 0)) {
-      throw new Error('İçerik boş olamaz, en az bir etiket seçmelisiniz veya bir metin girmelisiniz.');
-    }
-
-    const invalidTags = tags.filter((t) => !VALID_TAGS.includes(t));
-    if (invalidTags.length > 0) {
-      throw new Error(`Geçersiz etiketler: ${invalidTags.join(', ')}`);
-    }
+    FeelingsValidator.validateFeelingInput(text, tags);
 
     const result = feelingsRepository.insert(userId, contentId, text ? text.trim() : '');
     const feelingId = result.lastInsertRowid;
 
-    feelingsRepository.insertTags(feelingId, tags);
+    feelingTagsRepository.insertTags(feelingId, tags);
 
     const feeling = feelingsRepository.findByIdWithUser(feelingId);
     return this._mapFeelingTags(feeling);
@@ -62,19 +56,13 @@ class FeelingsService {
       throw new Error('Bu hissi silme yetkiniz yok.');
     }
 
+    feelingTagsRepository.deleteTags(feelingId);
     feelingsRepository.delete(feelingId);
     return true;
   }
 
   update(feelingId, userId, text, tags = []) {
-    if ((!text || text.trim().length === 0) && (!tags || tags.length === 0)) {
-      throw new Error('İçerik boş olamaz, en az bir etiket seçmelisiniz veya bir metin girmelisiniz.');
-    }
-
-    const invalidTags = tags.filter((t) => !VALID_TAGS.includes(t));
-    if (invalidTags.length > 0) {
-      throw new Error(`Geçersiz etiketler: ${invalidTags.join(', ')}`);
-    }
+    FeelingsValidator.validateFeelingInput(text, tags);
 
     const feeling = feelingsRepository.findById(feelingId);
     if (!feeling) throw new Error('His bulunamadı.');
@@ -85,8 +73,8 @@ class FeelingsService {
 
     feelingsRepository.update(feelingId, text ? text.trim() : '');
 
-    feelingsRepository.deleteTags(feelingId);
-    feelingsRepository.insertTags(feelingId, tags);
+    feelingTagsRepository.deleteTags(feelingId);
+    feelingTagsRepository.insertTags(feelingId, tags);
 
     const updatedFeeling = feelingsRepository.findByIdWithUser(feelingId);
     return this._mapFeelingTags(updatedFeeling);
@@ -96,31 +84,32 @@ class FeelingsService {
     const feeling = feelingsRepository.findById(feelingId);
     if (!feeling) throw new Error('His bulunamadı.');
 
-    const existingLike = feelingsRepository.findLike(feelingId, userId);
+    const existingLike = feelingLikesRepository.findLike(feelingId, userId);
 
     if (existingLike) {
-      feelingsRepository.deleteLike(feelingId, userId);
+      feelingLikesRepository.deleteLike(feelingId, userId);
       return { liked: false };
     } else {
-      feelingsRepository.insertLike(feelingId, userId);
+      feelingLikesRepository.insertLike(feelingId, userId);
       return { liked: true };
     }
   }
 
   getTopEmotionsForContents(contentIds) {
-    return feelingsRepository.getTopEmotionsForContents(contentIds);
+    return feelingTagsRepository.getTopEmotionsForContents(contentIds);
   }
 
   deleteByContentId(contentId) {
+    feelingTagsRepository.deleteTagsByContentId(contentId);
     return feelingsRepository.deleteByContentId(contentId);
   }
 
   getUserTopEmotions(userId, limit) {
-    return feelingsRepository.getUserTopEmotions(userId, limit);
+    return feelingTagsRepository.getUserTopEmotions(userId, limit);
   }
 
   getUserWeeklyEmotion(userId) {
-    return feelingsRepository.getUserWeeklyEmotion(userId);
+    return feelingTagsRepository.getUserWeeklyEmotion(userId);
   }
 }
 

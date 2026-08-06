@@ -1,14 +1,15 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import Icon from '@/features/icon/components/Icon';
 import ContentCard from '@/features/content/components/ContentCard';
-import { getLibraryTabs } from '@/constants/library';
 import { useLibrary } from '@/features/library/hooks/useLibrary';
 import { libraryStyles as styles } from '@/features/library/styles/library.styles';
 import { useLanguage } from '@/hooks/useLanguage';
+import LibraryTabs from '@/features/library/components/LibraryTabs';
+import CreateListModal from '@/features/library/components/CreateListModal';
 
 export default function LibraryScreen() {
   const { user } = useAuth();
@@ -43,39 +44,7 @@ export default function LibraryScreen() {
     <View className={styles.mainContainer}>
       <View className={styles.headerContainer}>
         <Text className={styles.headerTitle}>{t('library.myLibraryTitle')}</Text>
-        
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
-          {getLibraryTabs(t).map(tab => {
-            const isActive = activeTab === tab.id;
-            return (
-              <TouchableOpacity
-                key={tab.id}
-                onPress={() => setActiveTab(tab.id)}
-                activeOpacity={0.8}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 6,
-                  paddingHorizontal: 14,
-                  paddingVertical: 8,
-                  borderRadius: 9999,
-                  borderWidth: 1,
-                  backgroundColor: isActive ? COLORS.primary : (isDark ? COLORS.surfaceElevated : COLORS.surfaceElevated),
-                  borderColor: isActive ? COLORS.primary : (isDark ? COLORS.border : COLORS.border),
-                }}
-              >
-                <Icon name={tab.icon} size={16} color={isActive ? '#fff' : COLORS.textPrimary} weight={isActive ? "fill" : "regular"} />
-                <Text style={{
-                  fontSize: 13,
-                  fontWeight: '600',
-                  color: isActive ? '#fff' : COLORS.textPrimary,
-                }}>
-                  {tab.label}
-                </Text>
-              </TouchableOpacity>
-            )
-          })}
-        </ScrollView>
+        <LibraryTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       </View>
 
       {loading ? (
@@ -134,32 +103,14 @@ export default function LibraryScreen() {
         </ScrollView>
       )}
 
-      {/* Yeni Liste Modalı */}
-      {showCreateModal && (
-        <View className={styles.modalOverlay}>
-          <View className={styles.modalContainer}>
-            <Text className={styles.modalTitle}>{newListType === 'watching' ? t('library.newWatchList') : t('library.newReadList')}</Text>
-            <View className={styles.modalInputContainer}>
-              <TextInput
-                className={styles.modalInput}
-                placeholder={t('library.listNamePlaceholder')}
-                placeholderTextColor={COLORS.textMuted}
-                value={newListName}
-                onChangeText={setNewListName}
-                autoFocus
-              />
-            </View>
-            <View className={styles.modalButtonsContainer}>
-              <TouchableOpacity onPress={() => setShowCreateModal(false)} className={styles.modalCancelButton}>
-                <Text className={styles.modalCancelText}>{t('contentEdit.cancel')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleCreateList} className={styles.modalCreateButton}>
-                <Text className={styles.modalCreateText}>{t('library.createBtn')}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      )}
+      <CreateListModal 
+        visible={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        listType={newListType}
+        listName={newListName}
+        setListName={setNewListName}
+        onCreate={handleCreateList}
+      />
     </View>
   );
 }

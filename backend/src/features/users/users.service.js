@@ -3,6 +3,7 @@ const similarityService = require('./similarity.service');
 const feelingsRepository = require('@/features/feelings/feelings.repository');
 const usersEvents = require('./users.events');
 const usersValidator = require('./users.validator');
+const usersEmotionsUtils = require('./usersEmotions.utils');
 
 class UsersService {
   getProfile(userId, currentUserId = null) {
@@ -108,25 +109,9 @@ class UsersService {
     return usersRepository.getUserAuthProfile(userId);
   }
 
-  _padEmotions(rows, limit) {
-    const genericEmotions = ['mutluluk', 'huzur', 'heyecan', 'sevgi', 'umut', 'merak'];
-    const tags = rows.map(r => r.tag);
-    
-    if (tags.length < limit) {
-      for (const emotion of genericEmotions) {
-        if (!tags.includes(emotion)) {
-          tags.push(emotion);
-        }
-        if (tags.length >= limit) break;
-      }
-    }
-    
-    return tags;
-  }
-
   getTopEmotions(userId, limit = 5) {
     const rows = feelingsRepository.getUserTopEmotions(userId, limit);
-    return this._padEmotions(rows, limit);
+    return usersEmotionsUtils.padEmotions(rows, limit);
   }
 
   getUserPrivileges(userId) {

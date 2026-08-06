@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
-import { LinearGradient } from 'expo-linear-gradient';
-import { GRADIENTS } from '@/constants/colors';
 import { usePrivilegeManager } from '@/features/admin/hooks/usePrivilegeManager';
 import { styles } from './styles';
 import { useLanguage } from '@/hooks/useLanguage';
+
+import UserSearchResults from '@/features/admin/components/UserSearchResults';
+import PrivilegeCheckboxes from '@/features/admin/components/PrivilegeCheckboxes';
 
 export default function PrivilegeManager() {
   const { colors: COLORS } = useTheme();
@@ -57,59 +58,20 @@ export default function PrivilegeManager() {
         </TouchableOpacity>
       </View>
 
-      {/* Arama Sonuçları */}
-      {searchResults.map((u) => (
-        <TouchableOpacity
-          key={u.id}
-          className={`${styles.userRow} ${selectedUser?.id === u.id ? styles.userRowSelected : styles.userRowUnselected}`}
-          onPress={() => selectUser(u)}
-        >
-          <View className={styles.avatarContainer}>
-            <Text className={styles.avatarText}>{u.username[0].toUpperCase()}</Text>
-          </View>
-          <View className={styles.userInfoContainer}>
-            <Text className={styles.usernameText}>{u.username}</Text>
-            <Text className={styles.emailText}>{u.email}</Text>
-          </View>
-          {u.is_admin ? <Text className={styles.adminBadge}>ADMIN</Text> : null}
-        </TouchableOpacity>
-      ))}
+      <UserSearchResults 
+        searchResults={searchResults}
+        selectedUser={selectedUser}
+        selectUser={selectUser}
+      />
 
-      {/* Privilege Checkbox'ları */}
-      {selectedUser && !selectedUser.is_admin && (
-        <View className={styles.privilegesBox}>
-          <Text className={styles.privilegesHeader}>
-            {t('admin.privilegesFor', { username: selectedUser.username })}
-          </Text>
-          {Object.entries(PRIVILEGE_LABELS).map(([key, label]) => (
-            <TouchableOpacity
-              key={key}
-              className={styles.privilegeRow}
-              onPress={() => togglePrivilege(key)}
-            >
-              <View className={`${styles.checkboxContainer} ${privileges[key] ? styles.checkboxChecked : styles.checkboxUnchecked}`}>
-                {privileges[key] && <Text className={styles.checkmark}>✓</Text>}
-              </View>
-              <Text className={styles.privilegeLabel}>{label}</Text>
-            </TouchableOpacity>
-          ))}
-
-          <TouchableOpacity
-            className={`${styles.saveButtonContainer} ${saving ? 'opacity-60' : ''}`}
-            onPress={handleSave}
-            disabled={saving}
-          >
-            <LinearGradient 
-              colors={GRADIENTS.primary} 
-              className={styles.saveButtonGradient} 
-              start={{ x: 0, y: 0 }} 
-              end={{ x: 1, y: 0 }}
-            >
-              {saving ? <ActivityIndicator color="#fff" /> : <Text className={styles.saveButtonText}>{t('admin.savePrivileges')}</Text>}
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      )}
+      <PrivilegeCheckboxes 
+        selectedUser={selectedUser}
+        privilegeLabels={PRIVILEGE_LABELS}
+        privileges={privileges}
+        togglePrivilege={togglePrivilege}
+        saving={saving}
+        handleSave={handleSave}
+      />
     </View>
   );
 }
