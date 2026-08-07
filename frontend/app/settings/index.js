@@ -8,6 +8,8 @@ import { useSettings } from '@/features/settings/hooks/useSettings';
 import { getSettingsStyles } from '@/features/settings/styles/settings.styles';
 import { useLanguage } from '@/hooks/useLanguage';
 import LanguageSelector from '@/features/settings/components/LanguageSelector';
+import Toast from 'react-native-toast-message';
+import { notificationsApi } from '@/api/endpoints/notifications.api';
 
 export default function SettingsScreen() {
   const { user, logout, updateUser } = useAuth();
@@ -71,6 +73,23 @@ export default function SettingsScreen() {
                 );
               })}
             </View>
+            
+            <TouchableOpacity
+              style={[styles.actionRow, { marginTop: 24 }]}
+              onPress={() => {
+                notificationsApi.testPush();
+                Toast.show({
+                  type: 'info',
+                  text1: 'Test',
+                  text2: 'Bildirim 5 saniye içinde gelecek.',
+                });
+              }}
+            >
+              <Icon name="PaperPlaneTilt" size={22} color={COLORS.primary} />
+              <Text style={[styles.actionText, { color: COLORS.primary }]}>
+                Bildirim Testi Gönder
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
 

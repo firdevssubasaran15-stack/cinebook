@@ -11,6 +11,17 @@ function createNotificationsSchema(db) {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS user_push_tokens (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      token TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE(user_id, token)
+    );
+  `);
 }
 
 module.exports = { createNotificationsSchema };

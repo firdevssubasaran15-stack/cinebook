@@ -61,6 +61,10 @@ async function startServer() {
   try {
     await initDb();
     console.log('✅ Veritabanı başlatıldı.');
+    
+    // Start Push Notification Cron Jobs
+    const pushCronService = require('@/features/notifications/push-cron.service');
+    pushCronService.start();
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`\n🚀 CineBook API sunucusu başlatıldı`);

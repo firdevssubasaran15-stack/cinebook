@@ -7,6 +7,7 @@ import { useNotifications } from '@/features/notifications/hooks/useNotification
 import { notificationsStyles as styles } from '@/features/notifications/styles/notifications.styles';
 
 import { resolveNotificationMessage } from '@/features/notifications/utils/notificationMessageParser';
+import Toast from 'react-native-toast-message';
 
 export default function NotificationsScreen() {
   const { colors: COLORS } = useTheme();
@@ -16,7 +17,8 @@ export default function NotificationsScreen() {
     notifications,
     loading,
     handleMarkAsRead,
-    handleMarkAllAsRead
+    handleMarkAllAsRead,
+    handleTestPush
   } = useNotifications();
 
   const renderItem = ({ item }) => {

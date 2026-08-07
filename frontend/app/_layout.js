@@ -65,13 +65,21 @@ function RootStack() {
 
 import Toast from 'react-native-toast-message';
 import { toastConfig } from '@/config/toastConfig';
+import { usePushNotifications } from '@/features/notifications/hooks/usePushNotifications';
+
+function NotificationWrapper({ children }) {
+  usePushNotifications();
+  return children;
+}
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
         <ThemeProvider>
-          <RootStack />
+          <NotificationWrapper>
+            <RootStack />
+          </NotificationWrapper>
         </ThemeProvider>
       </AuthProvider>
       <Toast config={toastConfig} />

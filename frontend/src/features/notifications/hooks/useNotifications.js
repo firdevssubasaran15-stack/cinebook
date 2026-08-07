@@ -43,10 +43,19 @@ export function useNotifications() {
     }
   };
 
+  const handleTestPush = async () => {
+    try {
+      await notificationsApi.testPush();
+    } catch (err) {
+      console.error('Test bildirimi istegi basarisiz:', err);
+    }
+  };
+
   return {
     notifications,
     loading,
     handleMarkAsRead,
-    handleMarkAllAsRead
+    handleMarkAllAsRead,
+    handleTestPush
   };
 }

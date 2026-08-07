@@ -60,6 +60,32 @@ class NotificationsRepository {
       [userId, 'system_broadcast', message]
     );
   }
+
+  savePushToken(userId, token) {
+    // Insert or ignore if exists (UNIQUE constraint on user_id + token)
+    return dbRun(
+      `INSERT OR IGNORE INTO user_push_tokens (user_id, token) VALUES (?, ?)`,
+      [userId, token]
+    );
+  }
+
+  getUserPushTokens(userId) {
+    return dbQuery('SELECT token FROM user_push_tokens WHERE user_id = ?', [userId]);
+  }
+
+  getAllPushTokens() {
+    return dbQuery('SELECT user_id, token FROM user_push_tokens');
+  }
+
+  getInactiveUsers(hours) {
+    return dbQuery(
+      `SELECT id, username FROM users 
+       WHERE last_active_at IS NOT NULL 
+       AND datetime(last_active_at) <= datetime('now', '-' || ? || ' hours')
+       AND notifications_enabled = 1`,
+      [hours]
+    );
+  }
 }
 
 module.exports = new NotificationsRepository();

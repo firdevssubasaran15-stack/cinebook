@@ -15,6 +15,7 @@ function createUsersSchema(db) {
   try { db.run(`ALTER TABLE users ADD COLUMN profile_image TEXT;`); } catch (err) {}
   try { db.run(`ALTER TABLE users ADD COLUMN notifications_enabled INTEGER DEFAULT 1;`); } catch (err) {}
   try { db.run(`ALTER TABLE users ADD COLUMN notification_interval TEXT DEFAULT 'hourly';`); } catch (err) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN last_active_at DATETIME;`); } catch (err) {}
 
   db.run(`
     CREATE TABLE IF NOT EXISTS user_privileges (

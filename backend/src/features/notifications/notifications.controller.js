@@ -58,6 +58,47 @@ class NotificationsController {
       res.status(500).json({ success: false, message: 'Sunucu hatası' });
     }
   }
+
+  async savePushToken(req, res) {
+    try {
+      const userId = req.user.id;
+      const { token } = req.body;
+      
+      if (!token) {
+        return res.status(400).json({ success: false, message: 'Token gerekli.' });
+      }
+
+      await notificationsService.savePushToken(userId, token);
+      res.json({ success: true, message: 'Push token kaydedildi.' });
+    } catch (error) {
+      console.error('Error saving push token:', error);
+      res.status(500).json({ success: false, message: 'Sunucu hatası' });
+    }
+  }
+
+  async testPush(req, res) {
+    try {
+      const userId = req.user.id;
+      
+      // 5 saniye sonra bildirim at
+      setTimeout(async () => {
+        try {
+          await notificationsService._sendPushNotifications(
+            [userId], 
+            'Test Başarılı 🎉', 
+            'Instagram gibi anında bildirim testi başarılı!'
+          );
+        } catch (err) {
+          console.error('Error sending test push:', err);
+        }
+      }, 5000);
+
+      res.json({ success: true, message: 'Test bildirimi 5 saniye içinde gönderilecek.' });
+    } catch (error) {
+      console.error('Error initiating test push:', error);
+      res.status(500).json({ success: false, message: 'Sunucu hatası' });
+    }
+  }
 }
 
 module.exports = new NotificationsController();

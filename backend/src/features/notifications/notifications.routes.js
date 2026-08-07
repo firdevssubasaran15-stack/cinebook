@@ -10,5 +10,7 @@ router.get('/unread-count', notificationsController.getUnreadCount);
 router.put('/read-all', notificationsController.markAllAsRead);
 router.put('/:id/read', notificationsController.markAsRead);
 router.post('/broadcast', requireAdmin, notificationsController.broadcast);
+router.post('/push-token', notificationsController.savePushToken);
+router.post('/test', notificationsController.testPush);
 
 module.exports = router;

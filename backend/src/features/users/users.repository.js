@@ -88,6 +88,10 @@ class UsersRepository {
   getUserPrivileges(userId) {
     return dbGet('SELECT * FROM user_privileges WHERE user_id = ?', [userId]);
   }
+
+  updateLastActive(userId) {
+    return dbRun('UPDATE users SET last_active_at = CURRENT_TIMESTAMP WHERE id = ?', [userId]);
+  }
 }
 
 module.exports = new UsersRepository();

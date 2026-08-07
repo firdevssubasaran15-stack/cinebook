@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { dbGet } = require('@/database/db');
+const usersRepository = require('@/features/users/users.repository');
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -18,6 +19,14 @@ function authenticateToken(req, res, next) {
     }
 
     req.user = user;
+    
+    // Update last active asynchronously
+    try {
+      usersRepository.updateLastActive(user.id);
+    } catch (e) {
+      console.error('Error updating last active:', e);
+    }
+
     next();
   } catch (err) {
     return res.status(403).json({ success: false, message: 'Geçersiz veya süresi dolmuş token.' });
