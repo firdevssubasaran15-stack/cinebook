@@ -61,6 +61,15 @@ export default function LoginScreen() {
         />
 
         <TouchableOpacity
+          className="mt-4 items-center"
+          onPress={() => router.push('/(auth)/forgot-password')}
+        >
+          <Text className="text-sm font-semibold text-brand-primary">
+            Şifremi Unuttum
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           className="mt-5 items-center"
           onPress={() => router.push('/(auth)/register')}
         >

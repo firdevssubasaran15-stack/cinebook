@@ -61,7 +61,7 @@ npm install
 # 3. Uygulamayı başlat
 npx expo start -c
 REACT_NATIVE_PACKAGER_HOSTNAME=192.168.1.163 npx expo start --lan -c
-
+REACT_NATIVE_PACKAGER_HOSTNAME=192.168.1.163 npx expo start  -c
 
 ```
 

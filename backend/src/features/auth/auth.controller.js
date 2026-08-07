@@ -51,6 +51,48 @@ class AuthController {
       return errorResponse(res, err.message, 400);
     }
   }
+
+  async forgotPassword(req, res) {
+    try {
+      const { username, email } = req.body;
+      if (!username || !email) {
+        return errorResponse(res, 'Kullanıcı adı ve e-posta zorunludur.', 400);
+      }
+
+      const result = await authService.requestPasswordReset(username, email);
+      return successResponse(res, result, result.message);
+    } catch (err) {
+      return errorResponse(res, err.message, 400);
+    }
+  }
+
+  async verifyOtp(req, res) {
+    try {
+      const { email, code } = req.body;
+      if (!email || !code) {
+        return errorResponse(res, 'E-posta ve doğrulama kodu zorunludur.', 400);
+      }
+
+      const result = authService.verifyOtp(email, code);
+      return successResponse(res, result, result.message);
+    } catch (err) {
+      return errorResponse(res, err.message, 400);
+    }
+  }
+
+  async resetPassword(req, res) {
+    try {
+      const { email, code, newPassword } = req.body;
+      if (!email || !code || !newPassword) {
+        return errorResponse(res, 'E-posta, doğrulama kodu ve yeni şifre zorunludur.', 400);
+      }
+
+      const result = authService.resetPassword(email, code, newPassword);
+      return successResponse(res, result, result.message);
+    } catch (err) {
+      return errorResponse(res, err.message, 400);
+    }
+  }
 }
 
 module.exports = new AuthController();

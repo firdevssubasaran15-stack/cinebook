@@ -35,6 +35,37 @@ class AuthRepository {
   updateTheme(userId, theme) {
     return dbRun('UPDATE users SET theme_preference = ? WHERE id = ?', [theme, userId]);
   }
+
+  // --- PASSWORD RESET METHODS ---
+  findUserByUsernameAndEmail(username, email) {
+    return dbGet('SELECT * FROM users WHERE username = ? AND email = ?', [username, email]);
+  }
+
+  findUserByEmail(email) {
+    return dbGet('SELECT * FROM users WHERE email = ?', [email]);
+  }
+
+  createPasswordReset(userId, code, expiresAt) {
+    return dbRun(
+      'INSERT INTO password_resets (user_id, reset_code, expires_at) VALUES (?, ?, ?)',
+      [userId, code, expiresAt]
+    );
+  }
+
+  findPasswordReset(userId, code) {
+    return dbGet(
+      'SELECT * FROM password_resets WHERE user_id = ? AND reset_code = ?',
+      [userId, code]
+    );
+  }
+
+  deletePasswordResetsByUserId(userId) {
+    return dbRun('DELETE FROM password_resets WHERE user_id = ?', [userId]);
+  }
+
+  updatePassword(userId, passwordHash) {
+    return dbRun('UPDATE users SET password_hash = ? WHERE id = ?', [passwordHash, userId]);
+  }
 }
 
 module.exports = new AuthRepository();

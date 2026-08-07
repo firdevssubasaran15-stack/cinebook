@@ -7,6 +7,9 @@ export const ENDPOINTS = {
   // Auth
   LOGIN: '/api/auth/login',
   REGISTER: '/api/auth/register',
+  FORGOT_PASSWORD: '/api/auth/forgot-password',
+  VERIFY_OTP: '/api/auth/verify-otp',
+  RESET_PASSWORD: '/api/auth/reset-password',
 
   // Content
   CONTENT_LATEST: '/api/content/latest',

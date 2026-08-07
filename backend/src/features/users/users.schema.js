@@ -42,6 +42,17 @@ function createUsersSchema(db) {
       UNIQUE(follower_id, following_id)
     );
   `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS password_resets (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      reset_code TEXT NOT NULL,
+      expires_at DATETIME NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+  `);
 }
 
 module.exports = { createUsersSchema };
